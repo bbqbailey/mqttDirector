@@ -1,0 +1,103 @@
+Replying to 'help' request: Thu Dec 20 11:19:17 EST 2018
+Responding with msg: >>>> help <<<<: Thu Dec 20 11:19:17 EST 2018
+Shutdown: Thu Dec 20 11:34:19 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:34:19 EST 2018
+Shutdown: Thu Dec 20 11:35:38 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:35:38 EST 2018
+Shutdown: Thu Dec 20 11:36:28 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:36:28 EST 2018
+Shutdown: Thu Dec 20 11:38:59 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:38:59 EST 2018
+Shutdown: Thu Dec 20 11:39:56 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:39:56 EST 2018
+Shutdown: Thu Dec 20 11:51:38 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:51:38 EST 2018
+Shutdown: Thu Dec 20 11:52:46 EST 2018
+Responding with msg: SHUTDOWN: Thu Dec 20 11:52:46 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:52:46 EST 2018
+Shutdown: Thu Dec 20 11:58:53 EST 2018
+Responding with msg: SHUTDOWN: Thu Dec 20 11:58:53 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 11:58:53 EST 2018
+Reboot: Thu Dec 20 11:58:59 EST 2018
+Responding with msg: REBOOT: Thu Dec 20 11:58:59 EST 2018
+Responding with msg: >>>> rebooting <<<<: Thu Dec 20 11:58:59 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 11:59:13 EST 2018
+Responding with msg: ECHO: Thu Dec 20 11:59:13 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 11:59:13 EST 2018
+Responding with msg: NEWLOG: Thu Dec 20 11:59:53 EST 2018
+Responding with msg:  >>>> Creating New Log, and bumping old versions +1 <<<<: Thu Dec 20 11:59:53 EST 2018
+Shutdown: Thu Dec 20 12:00:32 EST 2018
+Responding with msg: SHUTDOWN: Thu Dec 20 12:00:33 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 12:00:33 EST 2018
+Reboot: Thu Dec 20 12:00:37 EST 2018
+Responding with msg: REBOOT: Thu Dec 20 12:00:37 EST 2018
+Responding with msg: >>>> rebooting <<<<: Thu Dec 20 12:00:37 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 12:00:44 EST 2018
+Responding with msg: ECHO: Thu Dec 20 12:00:44 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 12:00:44 EST 2018
+Replying to 'help' request: Thu Dec 20 12:00:50 EST 2018
+Responding with msg: >>>> help <<<<: Thu Dec 20 12:00:50 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 12:01:08 EST 2018
+Responding with msg: ECHO: Thu Dec 20 12:01:08 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 12:01:08 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 12:02:26 EST 2018
+Responding with msg: ECHO: Thu Dec 20 12:02:26 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 12:02:26 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 12:05:48 EST 2018
+Responding with msg: ECHO: Thu Dec 20 12:05:48 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 12:05:48 EST 2018
+Reboot: Thu Dec 20 12:06:07 EST 2018
+Responding with msg: REBOOT: Thu Dec 20 12:06:07 EST 2018
+Responding with msg: >>>> rebooting <<<<: Thu Dec 20 12:06:07 EST 2018
+Shutdown: Thu Dec 20 12:21:45 EST 2018
+Responding with msg: SHUTDOWN: Thu Dec 20 12:21:45 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 12:21:45 EST 2018
+Shutdown: Thu Dec 20 12:26:01 EST 2018
+Responding with msg: SHUTDOWN: Thu Dec 20 12:26:01 EST 2018
+Responding with msg: >>>> shutdown <<<<: Thu Dec 20 12:26:01 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:46:05 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:46:05 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:46:05 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:46:26 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:46:26 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:46:26 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:48:25 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:48:25 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:48:25 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:50:11 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:50:11 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:50:11 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:52:52 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:52:52 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:52:52 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:54:58 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:54:58 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:54:58 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:55:23 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:55:23 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:55:23 EST 2018
+Ignoring Unknown Action: : Thu Dec 20 13:56:40 EST 2018
+Responding with msg:   >>>  is an Unknown Command and is Ignored. <<<<: Thu Dec 20 13:56:40 EST 2018
+Blinking LED on specified Node: Thu Dec 20 13:56:50 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 13:56:50 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 13:56:50 EST 2018
+Ignoring Unknown Action: : Thu Dec 20 14:03:14 EST 2018
+Responding with msg:   >>>  is an Unknown Command and is Ignored. <<<<: Thu Dec 20 14:03:14 EST 2018
+Blinking LED on specified Node: Thu Dec 20 14:03:34 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:03:34 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:03:34 EST 2018
+Blinking LED on specified Node: Thu Dec 20 14:03:54 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:03:54 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:03:54 EST 2018
+Blinking LED on specified Node: Thu Dec 20 14:06:46 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:06:46 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:06:46 EST 2018
+Blinking LED on specified Node: Thu Dec 20 14:10:38 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:10:38 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:10:38 EST 2018
+Blinking LED on specified Node: Thu Dec 20 14:16:02 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:16:02 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:16:02 EST 2018
+Blinking LED on specified Node: Thu Dec 20 14:19:35 EST 2018
+Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:19:35 EST 2018
+Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:19:35 EST 2018
