@@ -1,0 +1,65 @@
+mqttDirector
+
+This project will allow me to issue a various commands, such as 'shutdown', 'reboot' for all systems in the event a need exists to bring them down quickly - e.g., a thunderstorm is approaching.
+
+
+
+Design:
+
+Using MQTT Mosquitto: Send a message for topic SHUTDOWN.  All subscribers
+to this topic will issue a 'shutdow now' command.
+
+Each system will run a MQTT Mosquitto client, which will be written in 
+Python for ease of programming.
+
+The MQTT Mosquitto broker will run on Hottub, at 192.168.1.208
+
+The utility program ShutdownAll will be located in /home/superbein/bin.
+This utility will publish the MQTT Mosqitto message with topic 'SHUTDOWN' 
+Additional information, such as time, and reason may be included as a 
+command line argument.
+
+Each client, on receipt of the message, will invoke the system "shutdown now"
+command.
+
+
+
+Programs:
+
+/home/superben/bin/ShutdownSystems.py - A Python program that will send
+the message to topic 'SHUTDOWN'.  It will also send any command line
+information as the message.
+
+<system>/superben/bin/ShutdownSubscriber.py - A Python program that will
+shutdown the system on receipt of the MQTT message with topic 'SHUTDOWN'.
+It will save any messages to the file system that were included.
+
+
+
+Startup:
+
+The MQTT Mosquitto server will need to be started at boot time, and
+monitored in case it drops or hangs.
+
+Client MQTT Mosquitto subscribers will need to be started at boot 
+time and monitored.  ShutdownSubscriber.py
+
+
+Info:
+
+Existing code.
+<hottub>/home/superben/bin/readMqtt
+
+Info on shutting down RPI via Python
+https://www.raspberrypi.org/forums/viewtopic.php?t=211840 
+
+https://randomnerdtutorials.com/testing-mosquitto-broker-and-client-on-raspbbery-pi/
+https://www.ev3dev.org/docs/tutorials/sending-and-receiving-messages-with-mqtt/
+https://tutorials-raspberrypi.com/raspberry-pi-mqtt-broker-client-wireless-communication/
+http://www.steves-internet-guide.com/mosquitto-broker/
+https://www.raspberrypi.org/forums/viewtopic.php?t=206743
+https://theembeddedlab.com/tutorials/install-mosquitto-on-a-raspberry-pi/
+https://www.meccanismocomplesso.org/en/how-to-raspberry-checking-raspbian-version-update-upgrade/
+https://dornerworks.com/blog/using-mqtt-inter-process-communication-internet-things
+https://www.survivingwithandroid.com/2016/10/mqtt-protocol-tutorial.html
+https://www.abelectronics.co.uk/kb/article/1085/io-pi-tutorial---mqtt-control
