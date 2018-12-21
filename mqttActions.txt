@@ -1,4 +1,0 @@
-New log started: Fri Dec 21 13:08:22 EST 2018
-Responding with msg:  >>>> Creating New Log, and bumping old versions +1 <<<<: Fri Dec 21 13:08:22 EST 2018
-Ignoring Unknown Action: EXIGT: Fri Dec 21 13:08:35 EST 2018
-Responding with msg:   >>> EXIGT is an Unknown Command and is Ignored. <<<<: Fri Dec 21 13:08:35 EST 2018
