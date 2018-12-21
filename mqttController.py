@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import paho.mqtt.client as mqtt
 import os
 import subprocess
@@ -7,7 +8,7 @@ MQTT_SERVER = "192.168.1.208" #Hottub mqtt server/broker
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH   = "CONTROLLER/RESPONSE"
 NODENAME=os.uname().nodename  
-LOG_FILE = "mqttActions.txt"  #a logging file
+LOG_FILE = "/media/Hottub/mqttActions.txt"  #a logging file
 
 def DEBUG(msg):
     if  __debug__: 
@@ -15,8 +16,10 @@ def DEBUG(msg):
 
 #log actions
 def logActions(action):
-    os.system("echo -n \"" + action + ": \" >> mqttActions.txt")
-    os.system("date >> mqttActions.txt")
+#    os.system("echo -n \"" + action + ": \" >> mqttActions.txt")
+    os.system("echo -n \"" + action + ": \" >> " + LOG_FILE)
+#    os.system("date >> mqttActions.txt")
+    os.system("date >> " + LOG_FILE)
 
 #determine the appropriate control action contained in mqtt message
 def _action(strReceived):

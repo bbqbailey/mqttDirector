@@ -1,5 +1,0 @@
-Install paho-mqtt.
-    This provides python the ability to communicate via MQTT.
-    Reference: https://pypi.org/project/paho-mqtt
-    
-    command: sudo install paho-mqtt

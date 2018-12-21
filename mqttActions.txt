@@ -101,3 +101,35 @@ Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:16:02 EST 2018
 Blinking LED on specified Node: Thu Dec 20 14:19:35 EST 2018
 Responding with msg: BLINK RPI-DEV: Thu Dec 20 14:19:35 EST 2018
 Responding with msg:  >>> BLINKING LED <<<<: Thu Dec 20 14:19:35 EST 2018
+Responding with msg: >>> STARTED <<<: Thu Dec 20 18:05:16 EST 2018
+
+>>>Connected with result code<<<0: Thu Dec 20 18:05:16 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 18:06:16 EST 2018
+Responding with msg: ECHO: Thu Dec 20 18:06:16 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 18:06:16 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 18:34:08 EST 2018
+Responding with msg: ECHO: Thu Dec 20 18:34:08 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 18:34:08 EST 2018
+echoing this node name back to mqtt server: Thu Dec 20 18:42:06 EST 2018
+Responding with msg: ECHO: Thu Dec 20 18:42:06 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Thu Dec 20 18:42:06 EST 2018
+echoing this node name back to mqtt server: Fri Dec 21 08:13:16 EST 2018
+Responding with msg: ECHO: Fri Dec 21 08:13:16 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Fri Dec 21 08:13:16 EST 2018
+Responding with msg: >>> STARTED <<<: Fri Dec 21 11:46:14 EST 2018
+
+>>>Connected with result code<<<0: Fri Dec 21 11:46:14 EST 2018
+Responding with msg: >>> STARTED <<<: Fri Dec 21 12:05:30 EST 2018
+
+>>>Connected with result code<<<0: Fri Dec 21 12:05:30 EST 2018
+Responding with msg: >>> STARTED <<<: Fri Dec 21 12:15:57 EST 2018
+
+>>>Connected with result code<<<0: Fri Dec 21 12:15:57 EST 2018
+CONTROLLER/ACTION : NODENAME: HOTTUB ECHO FRI DEC 21 12:17:12 EST 2018
+: Responding with msg: ECHO: Fri Dec 21 12:17:12 EST 2018
+Fri Dec 21 12:17:12 EST 2018
+echoing this node name back to mqtt server: ning. <<<<: Fri Dec 21 12:17:12 EST 2018
+Fri Dec 21 12:17:12 EST 2018
+Responding with msg:  >>> Online and Functioning. <<<<: Fri Dec 21 12:17:12 EST 2018
+Ignoring Unknown Action: [A: Fri Dec 21 12:17:32 EST 2018
+Responding with msg:   >>> [A is an Unknown Command and is Ignored. <<<<: Fri Dec 21 12:17:32 EST 2018

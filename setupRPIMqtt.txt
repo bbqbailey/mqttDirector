@@ -1,0 +1,199 @@
+OVERVIEW:
+There are two (2) applications that together will control a RPI via
+messages received from MQTT Mosquitto.
+
+The two applications are: mqttDirector, and mqttController.
+
+mqttDirector sends requests to mqttController.  mqttcontroller then
+performs the requested action.
+
+The requests for action are transported from the mqttDirector to the
+mqttController via an MQTT Moquitto broker, running on the node Hottub.
+
+mqttDirector is an application that runs on the node Hottub.  It utilizes
+the MQTT Mosquitto Server (or Broker - an older terminology), which has
+to be installed on Hottub and run as a service.  Please refer to MQTT
+Mosquitto for more information as to installing and setting up the
+MQTT Mosquitto server.
+
+mqttDirector is a terminal-based assplication, and has a simple text-based 
+menu enterface.
+
+Running mqttDirector will present a menu of choices.  E.g., 'echo', when 
+entered as the menu command, will cause all RPIs that are listening to the
+mqttDirector, to reply with their nodename.
+
+The MQTT Topics utilized are:
+
+    CONTROLLER/ACTION
+        Commands sent from mqttDirector are sent with Topic CONTROLLER/ACTION
+
+    CONTROLLER/RESPONSE
+        Responses from mqttController are sent with Topic CONTROLLER/RESPONSE
+
+    CONTROLLER/#
+        Enables you to monitor both 'channels'.
+
+The utility mqttMonitorRPIChannels allows the monitoring of both channels, 
+CONTROLLER/ACTION and CONTROLLER/RESPONSE.  It can be redirected to a
+file when starting it.
+
+
+SETUP:
+In order to run the python application mqttDirector, several things must
+be set up first; it is also dependent on the application mqttController
+to run the commands on a RPI via MQTT Mosquitto.
+
+Please perform the following commands, in order, on the RPI that will be 
+utilized for mqttController.
+
+1.  Install paho-mqtt.
+    This provides python the ability to communicate via MQTT.
+    Reference: https://pypi.org/project/paho-mqtt
+    
+    command: sudo install paho-mqtt
+
+2.  mqttDirector.py provides commands to shutdown or reboot the RPI.
+    These commands require root privilidges, making use of the 'sudo' command
+    'sudo' requires authentication, in the form of a login password.  This
+    is not convenient while running the application.  Therefore, the following
+    changes will need to be made to the file: /etc/sudoers.d/010_pi-nopasswd
+
+    2.1.1 Change to /ect/subdoers.d
+        cd /etc/subdoers.d
+
+    2.1.2 Make a copy of suduoers.d/010_pi-nonpasswd.  It is protected, so use 'sudo'
+        sudo cp 010_pi-nopasswd 010_pi-nopasswd.original
+
+    2.1.3 Now edit the 010_pi-nopasswd file
+        Edit 010_pi-nopasswd, and add the following two entries
+
+        pi RPI-Dev =NOPASSWD: /bin/systemctl poweroff,/bin/systemctl halt,/bin/systemctl reboot
+        pi RPI-Dev =NOPASSWD: /sbin/reboot
+
+        Save your work.
+
+    2.2.    You may have to logout then login for it to work.  Or, if that doesn't work, 
+            you may have to reboot.  You can test via 'sudo reboot', providing you haven't 
+            already performed a sudo and authenticated while in this session.
+
+3.  Assuming you have made changes outlined in section 2 above, and have tested it and it
+    works properly, you can move on to the next step.
+
+4.  Hottub is the main system for development, but the mqttDirector will be running on a
+    RPI.  Therefore, it is best to mount the development Hottub into a directory located
+    on the RPI.
+
+    So, we are going to use ssfs to mount the Hottub's directory to the RPI's /media subdirectory.
+
+    4.1  As pi, perform the following:
+
+        4.1.1 cd to the RPI directory /media
+            cd /media
+
+        4.1.2 create the directory Hottub.  This is where the Hottub code will mount.  
+            sudo mkdir Hottub
+
+        4.1.3 Directory Hottub is probably owned by root, so you'll need to change it, but
+            First, verify that it is owned by root by doing a 'ls -al' 
+
+                ls -al /media
+
+            If it is owned by 'root root', then you'll want to change it to pi pi by issuing:
+            
+                sudo chown pi:pi Hottub
+
+            Now ensure it is correct by doing ls -al /media and observing the ownserhip of pi pi
+
+                ls -al /media 
+            
+
+        4.1.4 Now we are going to create a flag-file to show wherether Hottub's directory
+            has been mounted or not. Well do this by issueing the 'touch' command
+            for a file named 'NOT_MOUNTED'.  If in the future you do a ls -al /media/Hottub
+            and you see the file 'NOT_MOUNTED', then you know your Hottub file system has
+            not been mounted, and you'll need to do the 'sshfs' command (down below).
+
+                First, cd to the Hottub directory you just created:
+
+                    cd /media/Hottub
+
+                Now, using 'touch' create the file NOT_MOUNTED
+
+                    touch NOT_MOUNTED
+
+            Now, make sure you've created this file by doing ls -al
+
+                    ls -al
+
+            You should see the file NOT_MOUNTED in /media/Hottub.
+
+        4.1.5  The directory on Hottub that contains the file mqttDirector, is located at
+            /home/superben/MySoftwareProjects/mqttDirector/.  So we are going to mount this 
+            directory at the mount point you just created: /media/Hottub
+
+                sshfs -o nonempty superben@hottub.local:./MySoftwareProjects/mqttDirector   /media/Hottub
+
+            Note: if your system complains that it does not have the command 'ssfs', then issue
+            the following command:
+
+                sudo install sshfs
+
+        4.1.6 Confirm that you have mounted the directory properly by performing 'ls -al'
+
+                ls -al /media/Hottub
+            
+            You should see many files, not the single file NOT_MOUNTED.
+
+        4.1.7 Ensure you have a ~/bin directory, and also that your $PATH contains an entry
+            to include this directory for command searches.  If you do not have a ~/bin directory,
+            then make one:
+                
+                mkdir ~/bin
+
+            Now cd to the bin directory
+
+                cd ~/bin
+
+        4.1.8 We will put the command mqttDirector into bin, but it will really be a link to the mqttDirector
+            located on Hottub, which we will get to by linking to the /media/Hottub filesystem.
+
+            First, create the link:
+    
+                ln -s mqttDirectory /media/Hottub
+
+            Now confirm the link:
+
+                ls -al mqttDirectory
+
+           It should show that this is a link, by displaying '->' as part of the name.
+
+5.  Your system should already have python3 installed. Let's check; Ctrl-Z will exit it.
+
+        python3
+
+    You should see some lines of text, with the last line showing ">>>".  If you see this, then
+    you should be good.  The version that I'm showing right now, and that the application was 
+    developed and tested on, is Python 3.5.3 (this should be the first line of the output from
+    your 'python3' command.  If you don't see this, or if you get an error trying to invoke 'python3',
+    then you will need to install python3.  Please perform a google search of Raspberry Pi python3' and 
+    follow installation instructions.
+
+6.  Your system should now be properly set up to run mqttDirector.
+
+    Issue the following command:
+
+    python3 -O mqttDirector.py   (Note: this option -O surpresses debug output.  For the first run, I would suggest -O)
+
+    or
+
+    python3 mqttDirector.py      (Note: the lack of the -O option means debug info will be displayed.)
+
+7.  If you have sucessfully completed the application installation, you should see the file ~/bin/mqttActions.txt, 
+    which is the log file for the application.  You can create a new log file, while retaining up to 5 total
+    files.  To do this, on Hottub, from the application 'mqttDirector', select the 'newLog' command.
+            
+
+
+
+
