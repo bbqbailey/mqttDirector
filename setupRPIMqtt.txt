@@ -37,9 +37,9 @@ The MQTT Topics utilized are:
 
 --- mqttController INSIGHT ---
 mqttController is a python3 program.  It can be run as a standalone application
-but the primary use is that of a systemd service.  As such, it will not be
-visable from a terminal; instead, it will write information to the file
-mqttAction.txt.
+but the primary use is that of a systemd service.  When running as a service, 
+the output will not be visable from a terminal; instead, the information can
+be viewed in the log file mqttAction.txt.
 
 --- mqttMonitorRPIChannels INSIGHT ---
 The utility mqttMonitorRPIChannels allows the monitoring of both channels, 
@@ -58,8 +58,19 @@ utilized for mqttController.
 1.  Install paho-mqtt.
     This provides python the ability to communicate via MQTT.
     Reference: https://pypi.org/project/paho-mqtt
+
+    Issue the following pip3 install command:
     
-    command: sudo install paho-mqtt
+        pip3 install paho-mqtt
+
+    If you get an error,  you may not have pip3 installed.  
+    To install pip3, issue the following command:
+
+        sudo apt install python3-pip
+
+    Then retry the 'sudo pip3 install paho-mqtt' command above.
+
+    
 
 2.  mqttDirector.py provides commands to shutdown or reboot the RPI.
     These commands require root privilidges, making use of the 'sudo' command
@@ -67,13 +78,14 @@ utilized for mqttController.
     is not convenient while running the application.  Therefore, the following
     changes will need to be made to the file: /etc/sudoers.d/010_pi-nopasswd
 
-    2.1.1 Change to /ect/subdoers.d
-        cd /etc/subdoers.d
+    2.1.1 Change to /ect/sudoers.d
+        cd /etc/sudoers.d
 
     2.1.2 Make a copy of suduoers.d/010_pi-nonpasswd.  It is protected, so use 'sudo'
         sudo cp 010_pi-nopasswd 010_pi-nopasswd.original
 
-    2.1.3 Now edit the 010_pi-nopasswd file
+    2.1.3 Now, using sudo, edit the 010_pi-nopasswd file
+        e.g., 'sudo vim /010_pi_nopasswd'
         Edit 010_pi-nopasswd, and add the following two entries
 
         pi RPI-Dev =NOPASSWD: /bin/systemctl poweroff,/bin/systemctl halt,/bin/systemctl reboot
@@ -90,7 +102,7 @@ utilized for mqttController.
 
 4.  Hottub is the main system for development, but the mqttDirector will be running on a
     RPI.  Therefore, it is best to mount the development Hottub into a directory located
-    on the RPI.
+    on the RPI, and then copy the required files to your /home/pi/MySoftwareProjects/mqttController.
 
     So, we are going to use ssfs to mount the Hottub's directory to the RPI's /media subdirectory.
 
@@ -140,12 +152,18 @@ utilized for mqttController.
             /home/superben/MySoftwareProjects/mqttDirector/.  So we are going to mount this 
             directory at the mount point you just created: /media/Hottub
 
+            First, cd out of the /media/Hottub directory
+    
+                cd ..
+
+            Next, we'll sshfs the filesystem
+
                 sshfs -o nonempty superben@hottub.local:./MySoftwareProjects/mqttDirector   /media/Hottub
 
             Note: if your system complains that it does not have the command 'ssfs', then issue
             the following command:
 
-                sudo install sshfs
+                sudo apt install sshfs
 
         4.1.6 Confirm that you have mounted the directory properly by performing 'ls -al'
 
@@ -153,30 +171,59 @@ utilized for mqttController.
             
             You should see many files, not the single file NOT_MOUNTED.
 
-        4.1.7 Ensure you have a ~/bin directory, and also that your $PATH contains an entry
-            to include this directory for command searches.  If you do not have a ~/bin directory,
-            then make one:
-                
-                mkdir ~/bin
+        4.1.7 Create the directory structure /home/pi/MySoftwareProjects, then /home/pi/MySoftwareProjects/mqttController                
+                mkdir ~/MySoftwareProjects
+                mkdir ~/MySoftwareProjects/mqttController
 
             Now cd to the bin directory
 
-                cd ~/bin
+                cd ~/MySoftwareProjects/mqttController
 
-        4.1.8 We will put the command mqttDirector into bin, but it will really be a link to the mqttDirector
-            located on Hottub, which we will get to by linking to the /media/Hottub filesystem.
+        4.1.8 We will copy the pythono program mqttController.py from /media/Hottub/  into ~/MySoftwareProjects/mqttController 
+                which is your current directory from above.
 
-            First, create the link:
+            cp /media/Hottub/mqttController.py ./
+
+        4.1.9 Now we will copy the sytemctl service mqttController.service from /media/Hottub to ~/MySoftareProjects/mqttController
+            
+            cp /media/Hottub/mqttController.service ./
+
+        4.1.10 Do a 'ls -al' on ~/MySoftwareProjects/mqttController to ensure you see the two files:
+
+            ls -al ~/MySoftwareProjects/mqttController
+
+            shows: mqttController.py and mqttController.service
+
+5.  You will now need to install the mqttController.service onto your RPI so that it 
+    will always provide the mqttController.py service without your having to manually
+    start it in a terminal.
+
+    First, make sure you are still in the ~/MySoftwareProjects/mqttController
+
+        cd ~/MySoftwareProjects/mqttController
+
+    Next, copy the mqttController.service to the systemd directory:
     
-                ln -s mqttDirectory /media/Hottub
+        sudo cp mqttController.service /lib/systemd/system/
 
-            Now confirm the link:
+    Next, 'enable' it so it will start any time the system starts back up
 
-                ls -al mqttDirectory
+        sudo systemctl enable mqttController.service
 
-           It should show that this is a link, by displaying '->' as part of the name.
+    Next, 'daemon-reload' to insert it into the systemd without restarting
 
-5.  Your system should already have python3 installed. Let's check; Ctrl-Z will exit it.
+        sudo systemctl daemon-reload
+
+    Next, 'start' the service
+
+        sudo systemctl start mqttController.service
+
+    Now finally, test that it is running.  It should state that it is running and have
+    a green status light in the text output on your temrinal.
+
+        sudo systemctl status mqttController.service
+
+6.  Your system should already have python3 installed. Let's check; Ctrl-Z will exit it.
 
         python3
 
@@ -187,19 +234,23 @@ utilized for mqttController.
     then you will need to install python3.  Please perform a google search of Raspberry Pi python3' and 
     follow installation instructions.
 
-6.  Your system should now be properly set up to run mqttDirector.
+7.  Your system should now be properly set up to run mqttDirector on your MQTT Server system; mine is on Hottub.
 
-    Issue the following command:
+    So, from a terminal session on my Hottub system, I cd to ~/MySoftwareProjects/mqttDirector
+        cd ~/MySoftwareProjects/mqttDirector
 
-    python3 -O mqttDirector.py   (Note: this option -O surpresses debug output.  For the first run, I would suggest -O)
+    Then I issue the following command:
+
+        python3 -O mqttDirector.py   (Note: this option -O surpresses debug output.  For the first run, I would suggest -O)
 
     or
 
-    python3 mqttDirector.py      (Note: the lack of the -O option means debug info will be displayed.)
+        python3 mqttDirector.py      (Note: the lack of the -O option means debug info will be displayed.)
 
-7.  If you have sucessfully completed the application installation, you should see the file ~/bin/mqttActions.txt, 
-    which is the log file for the application.  You can create a new log file, while retaining up to 5 total
-    files.  To do this, on Hottub, from the application 'mqttDirector', select the 'newLog' command.
+8.  If you have sucessfully completed the application installation, you should see the file 
+    ~/MySoftwareProjects/mqttController/mqttAction.txt, which is the log file for the application.  
+    You can create a new log file, while retaining up to 5 total files.  To do this, on Hottub, from the
+    application 'mqttDirector', issue the 'newLog' command.
             
 
 

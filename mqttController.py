@@ -8,7 +8,7 @@ MQTT_SERVER = "192.168.1.208" #Hottub mqtt server/broker
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH   = "CONTROLLER/RESPONSE"
 NODENAME=os.uname().nodename  
-LOG_FILE = "/media/Hottub/mqttActions.txt"  #a logging file
+LOG_FILE = "/home/pi/MySoftwareProjects/mqttController/mqttActions.txt"  #a logging file
 
 def DEBUG(msg):
     if  __debug__: 
@@ -81,12 +81,13 @@ def _blink_on(strReceived):
     strReceived = strReceived.upper()
     nodename=NODENAME.upper()
     DEBUG("\n_blinking_on() entry, strReceived: " + strReceived)
-    logActions("Blinking " + nodename)
-    _response("Blinking " + nodename)
 
     #determine if I'm the RPI that needs to blink
     if (strReceived.find(nodename) != -1):
         DEBUG("_blinking_on(): activated for me! ")
+        logActions("Blinking " + nodename)
+        _response("Blinking " + nodename)
+
         for x in range(1, 60):
             #turn led on for 1/4 sec
             os.system("echo 1 | sudo tee /sys/class/leds/led1/brightness 1>/dev/null")
