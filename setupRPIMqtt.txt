@@ -1,9 +1,10 @@
-OVERVIEW:
+--- OVERVIEW ---
 There are two (2) applications that together will control a RPI via
 messages received from MQTT Mosquitto.
 
 The two applications are: mqttDirector, and mqttController.
 
+--- MqttDirector INSIGHT ---
 mqttDirector sends requests to mqttController.  mqttcontroller then
 performs the requested action.
 
@@ -34,6 +35,13 @@ The MQTT Topics utilized are:
     CONTROLLER/#
         Enables you to monitor both 'channels'.
 
+--- mqttController INSIGHT ---
+mqttController is a python3 program.  It can be run as a standalone application
+but the primary use is that of a systemd service.  As such, it will not be
+visable from a terminal; instead, it will write information to the file
+mqttAction.txt.
+
+--- mqttMonitorRPIChannels INSIGHT ---
 The utility mqttMonitorRPIChannels allows the monitoring of both channels, 
 CONTROLLER/ACTION and CONTROLLER/RESPONSE.  It can be redirected to a
 file when starting it.

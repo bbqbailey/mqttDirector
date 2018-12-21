@@ -105,14 +105,14 @@ def _blink_on(strReceived):
 def newLog():
     msg = " >>>> Creating New Log, and bumping old versions +1 <<<<"
     DEBUG("\nnewLog() entry")
+   
+    os.system("mv " + LOG_FILE + "4 " + LOG_FILE + "5")
+    os.system("mv " + LOG_FILE + "3 " + LOG_FILE + "4")
+    os.system("mv " + LOG_FILE + "2 " + LOG_FILE + "3")
+    os.system("mv " + LOG_FILE + " " + LOG_FILE + "2 2>> " + LOG_FILE)
+    os.system("echo -n \"New log started: \" > " + LOG_FILE)
+    os.system("date >> " + LOG_FILE)
 
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt4 ~/MySoftwareProjects/mqttController/mqttActions.txt5")
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt3 ~/MySoftwareProjects/mqttController/mqttActions.txt4")
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt2 ~/MySoftwareProjects/mqttController/mqttActions.txt3")
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt ~/MySoftwareProjects/mqttController/mqttActions.txt2")
-    
-    os.system("echo -n \"New log started: \" > ~/MySoftwareProjects/mqttActions.txt")
-    os.system("date >> ~/MySoftwareProjects/mqttActions.txt")
 
     _response(msg)
     print("Created new logging file and incrementing old versions to +1.")
@@ -175,7 +175,7 @@ client.on_message = on_message
 client.connect(MQTT_SERVER, 1883, 60)
 
 #announce start
-_response(">>> STARTED <<<")
+_response("\n\n>>> STARTED <<<")
  
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
