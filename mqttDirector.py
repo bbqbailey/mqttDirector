@@ -3,6 +3,7 @@ import paho.mqtt.client as mqtt
 import os
 import subprocess
  
+MQTT_DIRECTOR_VERSION="mqttDirector.py Version: 1.0 Date Dec 22, 2018"
 MQTT_SERVER = "192.168.1.208" #Hottub mqtt server/broker
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH   = "CONTROLLER/RESPONSE"
@@ -39,6 +40,7 @@ def _menu():
     print("echo            Echo will cause all systems to reply with their hostname")
     print("blink <RPI>     Blink specified RPI (e.g., blink RPI-DEV) to blink for 1 minute.")
     print("newLog          NewLog will create new logging file, and increment existing to version +1")
+    print("version         Version of mqttDirector.py (this application): ")
     print("help         Help displays commands that can be invoked")
     print()
     print("exit         Exit this programe only; subscribers still monitoring MQTT Topic CONTROLLER/ACTION")
@@ -65,6 +67,8 @@ def _action(strReceived):
         _blink_on(strReceived)
     elif (strReceived.find('NEWLOG') != -1):
         newLog()
+    elif (strReceived.find('VERSION') != -1):
+        version()
     elif (strReceived.find('NODENAME') != -1): #!!!!!!!!!is this used?
         _nodename(strReceived)
     elif (strReceived.find('HELP') != -1):
@@ -148,6 +152,15 @@ def newLog():
     print("Created new logging file and incrementing old versions to +1.")
     DEBUG("newLog() exit")
 
+# version - respond with the version of this code mqttDirector.py
+def version():
+    DEBUG("\nversion() entry")
+    logActions("Responding with version of mqttDirectorpy")
+    _sendCommand("VERSION")
+    _response(MQTT_DIRECTOR_VERSION)
+    DEBUG("version() exit")
+
+
 #help - list the known commands and etc
 def help():
     msg=">>>> help <<<<"
@@ -214,6 +227,7 @@ def on_message(client, userdata, msg):
     _action(strReceived)
     DEBUG("on_message() exit\n")
 
+_response("Starting.... " + MQTT_DIRECTOR_VERSION)
 _menu()
 print("should not be here")
 exit()
