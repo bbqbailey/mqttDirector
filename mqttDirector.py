@@ -35,18 +35,19 @@ def _menu():
     print("<Form is 'Command Description'.  E.g., issue 'shutdown' to shutdown all systems.>")
     print()
     print()
-    print("shutdown        Shutdown all systems.")
-    print("reboot          Reboot all systems.")
-    print("echo            Echo will cause all systems to reply with their hostname")
-    print("blink <RPI>     Blink specified RPI (e.g., blink RPI-DEV) to blink for 1 minute.")
-    print("newLog          NewLog will create new logging file, and increment existing to version +1")
-    print("version         Version of mqttDirector.py (this application): ")
-    print("help         Help displays commands that can be invoked")
+    print("\tshutdown        Shutdown all systems.")
+    print("\treboot          Reboot all systems.")
+    print("\techo            Echo will cause all systems to reply with their hostname")
+    print("\tblink <RPI>     Blink specified RPI (e.g., blink RPI-DEV) to blink for 1 minute.")
+    print("\tnewLog          NewLog will create new logging file, and increment existing to version +1")
+    print("\tversion         Version of mqttDirector.py (this application): ")
+    print("\tosRelease       request the OS version info from each RPI")
+    print("\thelp            Help displays commands that can be invoked")
     print()
-    print("exit         Exit this programe only; subscribers still monitoring MQTT Topic CONTROLLER/ACTION")
+    print("\texit         Exit this programe only; subscribers still monitoring MQTT Topic CONTROLLER/ACTION")
     print()
     command = str.upper(input("Please enter your command: "))
-    print("Command received: " + command)
+    print(">>>  Command received: " + command)
     print()
 
     _action(command)
@@ -69,6 +70,8 @@ def _action(strReceived):
         newLog()
     elif (strReceived.find('VERSION') != -1):
         version()
+    elif (strReceived.find('OS') != -1):
+        osRelease()
     elif (strReceived.find('NODENAME') != -1): #!!!!!!!!!is this used?
         _nodename(strReceived)
     elif (strReceived.find('HELP') != -1):
@@ -160,6 +163,16 @@ def version():
     _response(MQTT_DIRECTOR_VERSION)
     DEBUG("version() exit")
 
+# version - respond with the version of this code mqttDirector.py
+def osRelease():
+    msg = " >>> OSRELEASE Version Info <<<<"
+    DEBUG("\nosRelease() entry")
+    logActions("Responding with /etc/os-release info.")
+    _sendCommand("OSRELEASE")
+    _response(msg)
+    DEBUG("osRelease() exit")
+
+
 
 #help - list the known commands and etc
 def help():
@@ -168,11 +181,14 @@ def help():
     logActions("Replying to 'help' request")
     
     print("\nCommands recognized for MQTT topic " + MQTT_TOPIC_SUBSCRIBE + ":")
-    print("\tshutdown   - shuts all participating systems down.")
-    print("\treboot     - reboots all participating systems.")
-    print("\techo       - send an echo response to topic: " + MQTT_TOPIC_PUBLISH)
-    print("\tnewLog     - increments all logs; creates and uses new log")
-    print("\thelp       - lists the commands, etc.")
+    print("\tshutdown     - shuts all participating systems down.")
+    print("\treboot       - reboots all participating systems.")
+    print("\techo         - send an echo response to topic: " + MQTT_TOPIC_PUBLISH)
+    print("\tblink <node> - send a request to the specific <node> to perform a blink to help locate it.")
+    print("\tnewLog       - increments all logs; creates and uses new log")
+    print("\tversion      - cause RPIs to provide their version number of mqttController.py")
+    print("\tosRelease    - cause RPIs to run /etc/os-release, showing OS version info, etc")
+    print("\thelp         - lists the commands, etc.")
     print()
 
     _response(msg)
