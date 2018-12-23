@@ -87,7 +87,7 @@ def _sendCommand(command):
     DEBUG("\n_sendCommand() entry")
     print("Sending command: " + command)
     date = subprocess.check_output('date').decode('ascii')
-    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_SUBSCRIBE + '\" -m \"Nodename: ' + NODENAME + ' ' + command + ' ' + date  + '\"' 
+    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_SUBSCRIBE + '\" -m \"App: mqttDirector; Nodename: ' + NODENAME + ' Message: ' + command + ' ' + date  + '\"' 
     os.system(response)
     
     _response(command)
@@ -197,7 +197,7 @@ def _response(msg):
     DEBUG("\nresponse() entry")
     logActions("Responding with msg: " + msg) 
     date = subprocess.check_output('date').decode('ascii')
-    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"Nodename: ' + NODENAME + ' ' + msg + ' ' + date  + '\"' 
+    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttDirectory.py, Nodename: ' + NODENAME + ' Message: ' + msg + ' ' + date  + '\"' 
     os.system(response)
     DEBUG("\nresponse() exit")
 
