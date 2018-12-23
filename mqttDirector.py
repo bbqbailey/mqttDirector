@@ -139,17 +139,6 @@ def _blink_on(strReceived):
 def newLog():
     msg = " >>>> Creating New Log, and bumping old versions +1 <<<<"
     DEBUG("\nnewLog() entry")
-    '''
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt4 ~/MySoftwareProjects/mqttController/mqttActions.txt5")
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt3 ~/MySoftwareProjects/mqttController/mqttActions.txt4")
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt2 ~/MySoftwareProjects/mqttController/mqttActions.txt3")
-    os.system("mv ~/MySoftwareProjects/mqttController/mqttActions.txt ~/MySoftwareProjects/mqttController/mqttActions.txt2")
-    
-    os.system("echo -n \"New log started: \" > ~/MySoftwareProjects/mqttActions.txt")
-    os.system("date >> ~/MySoftwareProjects/mqttActions.txt")
-   
-   '''
-
     _sendCommand("NEWLOG")
     _response(msg)
     print("Created new logging file and incrementing old versions to +1.")
