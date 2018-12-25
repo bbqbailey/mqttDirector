@@ -2,22 +2,24 @@
 import paho.mqtt.client as mqtt
 import os
 import subprocess
- 
-MQTT_DIRECTOR_VERSION="mqttDirector.py Version: 1.0 Date Dec 22, 2018"
-MQTT_SERVER = "192.168.1.208" #Hottub mqtt server/broker
+MQTT_DIRECTOR_VERSION = "mqttDirector.py Version: 1.0 Date Dec 22, 2018"
+MQTT_SERVER = "192.168.1.208"  # Hottub mqtt server/broker
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
-MQTT_TOPIC_PUBLISH   = "CONTROLLER/RESPONSE"
-NODENAME=os.uname().nodename  
-LOG_FILE = "mqttActions.txt"  #a logging file
+MQTT_TOPIC_PUBLISH = "CONTROLLER/RESPONSE"
+NODENAME = os.uname().nodename  
+LOG_FILE = "mqttActions.txt"  #  a logging file
+
 
 def DEBUG(msg):
     if  __debug__: 
         print(msg)
 
-#log actions
+
+# log actions
 def logActions(action):
     os.system("echo -n \"" + action + ": \" >> mqttActions.txt")
     os.system("date >> mqttActions.txt")
+
 
 #display menu
 def _menu():
@@ -54,8 +56,7 @@ def _menu():
     _menu()
 
 
-
-#determine the appropriate control action contained in mqtt message
+# determine the appropriate control action contained in mqtt message
 def _action(strReceived):
     DEBUG("\n_action() entry, strReceived: "+ strReceived)
     if (strReceived.find('SHUTDOWN') != -1):
@@ -72,7 +73,7 @@ def _action(strReceived):
         version()
     elif (strReceived.find('OS') != -1):
         osRelease()
-    elif (strReceived.find('NODENAME') != -1): #!!!!!!!!!is this used?
+    elif (strReceived.find('NODENAME') != -1):  # !!!!!!!!!is this used?
         _nodename(strReceived)
     elif (strReceived.find('HELP') != -1):
         help()
@@ -82,6 +83,7 @@ def _action(strReceived):
         _unknownAction(strReceived);
     DEBUG("_action() exit\n")
 
+
 # sends command via MQTT to Topic:Command
 def _sendCommand(command):
     DEBUG("\n_sendCommand() entry")
@@ -89,14 +91,13 @@ def _sendCommand(command):
     date = subprocess.check_output('date').decode('ascii')
     response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_SUBSCRIBE + '\" -m \"App: mqttDirector; Nodename: ' + NODENAME + ' Message: ' + command + ' ' + date  + '\"' 
     os.system(response)
-    
     _response(command)
     DEBUG("\n_sendCommand() exit")
- 
-  
+
+
 # shutdown():
 def shutdown():
-    msg=">>>> shutdown <<<<"
+    msg = ">>>> shutdown <<<<"
     DEBUG("\nshutdown() entry")
     logActions("Shutdown")
     print(msg)
@@ -104,17 +105,19 @@ def shutdown():
     _response(msg)
     DEBUG("shutdown() exit\n")
 
-#reboot the system
+
+# reboot the system
 def reboot():
-    msg=">>>> rebooting <<<<"
-    DEBUG("\nreboot() entry") 
+    msg = ">>>> rebooting <<<<"
+    DEBUG("\nreboot() entry")
     logActions("Reboot")
     print(">>>rebooting<<<")
     _sendCommand("REBOOT")
     _response(msg)
     DEBUG("reboot() exit\n")
 
-#echoo a message, specific to this instance,  back to the controller
+
+# echoo a message, specific to this instance,  back to the controller
 def echo():
     msg = " >>> Online and Functioning. <<<<"
 
@@ -124,7 +127,8 @@ def echo():
     _response(msg)
     DEBUG("echo() exit")
 
-#blink onboard led
+
+# blink onboard led
 def _blink_on(strReceived):
     msg = " >>> BLINKING LED <<<<"
 
@@ -135,7 +139,7 @@ def _blink_on(strReceived):
     DEBUG("echo() exit")
 
 
-#refresh the log.  Keep 5 version
+# refresh the log.  Keep 5 version
 def newLog():
     msg = " >>>> Creating New Log, and bumping old versions +1 <<<<"
     DEBUG("\nnewLog() entry")
@@ -144,6 +148,7 @@ def newLog():
     print("Created new logging file and incrementing old versions to +1.")
     DEBUG("newLog() exit")
 
+
 # version - respond with the version of this code mqttDirector.py
 def version():
     DEBUG("\nversion() entry")
@@ -151,6 +156,7 @@ def version():
     _sendCommand("VERSION")
     _response(MQTT_DIRECTOR_VERSION)
     DEBUG("version() exit")
+
 
 # version - respond with the version of this code mqttDirector.py
 def osRelease():
@@ -162,13 +168,11 @@ def osRelease():
     DEBUG("osRelease() exit")
 
 
-
-#help - list the known commands and etc
+# help - list the known commands and etc
 def help():
-    msg=">>>> help <<<<"
+    msg = ">>>> help <<<<"
     DEBUG("\nhelp() entry")
     logActions("Replying to 'help' request")
-    
     print("\nCommands recognized for MQTT topic " + MQTT_TOPIC_SUBSCRIBE + ":")
     print("\tshutdown     - shuts all participating systems down.")
     print("\treboot       - reboots all participating systems.")
@@ -183,45 +187,47 @@ def help():
     _response(msg)
     DEBUG("\nhelp() exit")
 
+
 # deal with unknown command actions received def unknownAction(msg):
 def _unknownAction(strReceived):
-    msg=">>>> Unknown Action Requested <<<<"
+    msg = ">>>> Unknown Action Requested <<<<"
     DEBUG("\n_unknownAction() entry")
     logActions("Ignoring Unknown Action: " + strReceived)
     print(">>>Ignoring Unknown Action<<<")
-    _response("  >>> " + strReceived + " is an Unknown Command and is Ignored. <<<<" )
+    _response("  >>> " + strReceived + " is an Unknown Command and is Ignored. <<<<")
     DEBUG("_unknownAction() exit\n")
 
-#send response to commands
+
+# send response to commands
 def _response(msg):
     DEBUG("\nresponse() entry")
-    logActions("Responding with msg: " + msg) 
+    logActions("Responding with msg: " + msg)
     date = subprocess.check_output('date').decode('ascii')
-    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttDirectory.py, Nodename: ' + NODENAME + ' Message: ' + msg + ' ' + date  + '\"' 
+    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttDirectory.py, Nodename: ' + NODENAME + ' Message: ' + msg + ' ' + date + '\"'
     os.system(response)
     DEBUG("\nresponse() exit")
 
-#ignore any received NODENAME message
+
+# ignore any received NODENAME message
 def _nodename(strReceived):
-    DEBUG("\nnodename() entry") 
-    logActions("Ignoring  NODENAME Action as it is just an echo of an echo!") 
+    DEBUG("\nnodename() entry")
+    logActions("Ignoring  NODENAME Action as it is just an echo of an echo!")
     print(">>>Ignoring NODENAME Action<<<")
     DEBUG("nodename() exit\n")
 
 
-
-#================code to connect and receive mqtt messages===============
+# ================code to connect and receive mqtt messages===============
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     DEBUG("\non_connect() entry")
     print(" Connected with result code "+str(rc))
-    logActions("\n>>>Connected with result code<<<" +str(rc))
- 
+    logActions("\n>>>Connected with result code<<<" + str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe(MQTT_TOPIC_SUBSCRIBE)
     DEBUG("on_connect() exit\n")
+
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -240,9 +246,8 @@ exit()
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
- 
 client.connect(MQTT_SERVER, 1883, 60)
- 
+
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
 # Other loop*() functions are available that give a threaded interface and a
