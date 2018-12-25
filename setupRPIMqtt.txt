@@ -1,4 +1,21 @@
 --- OVERVIEW ---
+Note: I wrote this for myself, to install from my development node
+named Hottub. So the references to Hottub should be changed by you
+to reflect your development machine.  I would therefore, in order
+to keep the instructions in synch with your usage, create on your
+development machine, the directory structure ~/MySofwareProjects/mqttController
+Then you can pull from github.com/bbqbailey/mqttDirector and place into 
+your new ~/MySoftwareProjects/mqttController.  Then substitute
+your node's name for Hottub and you should be good to go.
+
+Note: The mqttDirector.py should run on your development node; the
+mqttController.py should run on the RPIs you want to control.
+
+Note: This has only been tested on RPI Raspbian versions Jessie and Stretch
+While it may work on other versions, it is your responsibility to verify
+this.
+
+
 There are two (2) applications that together will control a RPI via
 messages received communicated via MQTT Mosquitto.
 
@@ -68,6 +85,15 @@ to run the commands on a RPI via MQTT Mosquitto.
 Please perform the following commands, in order, on the RPI that will be 
 utilized for mqttController.
 
+0.  It would be best if we started with your RPI being at the latest code level.  
+    So exicute the following:
+
+        sudo apt-get update
+
+    if no errors, then execute:
+
+        sudo apt-get upgrade
+
 1.  Install paho-mqtt.
     This provides python the ability to communicate via MQTT.
     Reference: https://pypi.org/project/paho-mqtt
@@ -110,7 +136,7 @@ utilized for mqttController.
 
         Assuming you are using 'vim' as your editor, issue the following:
 
-            sudo vim 010_pi_nopasswd
+            sudo vim 010_pi-nopasswd
 
         Now past the following two lines of text into your 010_pi_nopasswd file:
 
@@ -122,7 +148,7 @@ utilized for mqttController.
 
         Verify 010_pi_nopasswd has the correct information in it now.
     
-            cat 010_pi_nopasswd
+            sudo cat 010_pi-nopasswd
 
     2.2.    You may have to logout then login for it to work.  Or, if that doesn't work, 
             you may have to reboot.  You can test via 'sudo reboot', providing you haven't 
@@ -198,6 +224,10 @@ utilized for mqttController.
                 mkdir ~/MySoftwareProjects
                 mkdir ~/MySoftwareProjects/mqttController
 
+            Now verify it was correctly created
+
+                ls -al ~/MySoftwareProjects/mqttController
+
         4.1.7   Next, we'll sshfs the filesystem
 
                 sshfs -o nonempty superben@hottub.local:./MySoftwareProjects/mqttController   /media/Hottub
@@ -214,7 +244,7 @@ utilized for mqttController.
             You should see many files, not the single file NOT_MOUNTED.
 
 
-            Now cd to the bin directory
+            Now cd to the directory where your code will be placed
 
                 cd ~/MySoftwareProjects/mqttController
 
@@ -261,15 +291,16 @@ utilized for mqttController.
 
 
 
-    5.1 For JESSIE - Note: if systemctl sometimes failing to start on reboot, then
-            try removing from systemctl, and then adding to crontab -e instead
+    5.1 ============ For JESSIE  ================
 
-                crontab -e
+        Note: these instructions are for a RPI Raspbian running version Jessie.  If you
+        are running Stretch, then please skip these instructions, and advance to section
+        "For Stretch"
 
-            Add line to end:
-                @reboot /usr/bin/python3 /home/pi/MySoftwareProjects/mqttController/mqttController.py > /home/pi/cronjoblog 2>&1
+        You can determine your Raspbian version by performing the following:
 
-                
+            cat /etc/os-release
+
         For questions, see: http://jakemakes.eu/installing-mqtt-brokermosquitto-on-raspberry-pi/
         Note: the text that follows is taken from jakemakes.eu above
 
@@ -376,7 +407,8 @@ utilized for mqttController.
             Client mosqsub/3014-LightSwarm received PUBLISH (d0, q0, r0, m0, 'hello/world', ... (32 bytes))
             Greetings from Terminal window 2
 
-    5.2 For STRETCH
+    5.2 ============= For STRETCH ==============
+
         For questions, see:
             https://www.switchdoc.com/2018/02/tutorial-installing-and-testing-mosquitto-mqtt-on-raspberry-pi/
 
@@ -387,14 +419,15 @@ utilized for mqttController.
             cd /etc/apt/sources.list.d/
 
             sudo wget http://repo.mosquitto.org/debian/mosquitto-stretch.list
-            sudo apt-get update
+            sudo apt update
+            sudo apt upgrade
 
 
         Now we can install the three parts of Mosquitto proper.  For questions, see
             https://www.switchdoc.com/2018/02/tutorial-installing-and-testing-mosquitto-mqtt-on-raspberry-pi/
 
-            sudo apt-get install mosquitto mosquitto-clients
-           sudo apt-get install python-pip	
+           sudo apt install mosquitto mosquitto-clients
+           sudo apt install python-pip	
            sudo pip install paho-mqtt
     
 
@@ -421,7 +454,7 @@ utilized for mqttController.
         sudo systemctl daemon-reload
 
 
-6.  Your system should already have python 3.5 installed. Let's check; Ctrl-Z 
+7.  Your system should already have python 3.5 installed. Let's check; Ctrl-Z 
     will exit it.  Note: while Python 3.4.x may work, but I've experience
     some issues running 3.4 on Raspbien 'Jessie'.  It's certainly OK to install 
     under 3.4.x, but if you have any problems, I would 'suggest' moving to 
@@ -443,38 +476,27 @@ utilized for mqttController.
     I tried updating one RPI system, which was running Python 3.4 on 'jessie' 
     using the following, but it did not upgrade Python 3.4 to 3.5:
 
-        sudo apt-get update
+        sudo apt update
 
     Then
 
-        sudo apt-get upgrade
+        sudo apt upgrade
     
     Note: this may take a while, particularly the 'upgrade'
     
     Repeat the python3 command to see what version you are running if you did 
     the update and upgrade.
 
-7.  Reboot your RPI to see if your service will auto-start:
+8.  Reboot your RPI to see if your service will auto-start:
 
         sudo reboot
 
-8.  Once it has rebooted, then issue the following command to verify your service 
+9.  Once it has rebooted, then issue the following command to verify your service 
     is up and running:
 
         sudo systemctl status mqttController.service
 
-    Note: On my Raspberry PI running Jessie, which is at Python version 3.4,
-    it fails to start, after doing the 'update' 'upgrade' listed above.  
-    However, manually starting succeeds; I don't yet know why.  If you experience 
-    this, then issue the following command to manually start, and again check 
-    the status.
-
-        sudo system start mqttController.service
-
-        sudo system status mqttController.service
-
-
-7.  To test system should now be properly set up to run mqttDirector on your MQTT 
+10.  To test system should now be properly set up to run mqttDirector on your MQTT 
     Server system; mine is on Hottub.
 
     So, from a terminal session on my Hottub system, I cd 
@@ -490,12 +512,11 @@ utilized for mqttController.
 
         python3 mqttDirector.py      (Note: the lack of the -O option means debug info will be displayed.)
 
-8.  If you have sucessfully completed the application installation, you should see the file 
+11.  If you have sucessfully completed the application installation, you should see the file 
     ~/MySoftwareProjects/mqttController/mqttAction.txt, which is the log file for the application.  
     You can create a new log file, while retaining up to 5 total files.  To do this, on Hottub, from the
     application 'mqttDirector', issue the 'newLog' command.
             
 
-
-
-
+Please let me know of any issues.
+Thanks!  Ben Bailey, Dec 2018
