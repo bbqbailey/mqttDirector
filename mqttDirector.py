@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 import os
 import subprocess
 MQTT_DIRECTOR_VERSION = "mqttDirector.py Version: 1.0 Date Dec 22, 2018"
-MQTT_SERVER = "192.168.1.208"  # Hottub mqtt server/broker
+MQTT_SERVER = "192.168.1.208"  # address where the  mqtt server/broker is running
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH = "CONTROLLER/RESPONSE"
 NODENAME = os.uname().nodename  

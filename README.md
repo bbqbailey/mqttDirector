@@ -14,14 +14,18 @@ Each RPI was running an instance of mqttController, which was a
 python program that listens for commands from MqttDirector by 
 listening for commands from MQTT Mosquitto.
 
-Note: I wrote this for myself, to install from my development node
-named Hottub. So the references to Hottub should be changed by you
-to reflect your development machine.  I would therefore, in order
+Note: I wrote this for myself, to install from my development node.
+In this document, I'll refer to it as the node DEV_NODE.
+So the references to DEV_NODE should be changed by you
+to reflect your development machine.  Likewise, I'm referring to the 
+user id as USER.
+
+I would therefore, in order
 to keep the instructions in synch with your usage, create on your
 development machine, the directory structure ~/MySofwareProjects/mqttController
 Then you can pull from github.com/bbqbailey/mqttDirector and place into 
 your new ~/MySoftwareProjects/mqttController.  Then substitute
-your node's name for Hottub and you should be good to go.
+your node's name for DEV_NODE and you should be good to go.
 
 Note: The mqttDirector.py should run on your development node; the
 mqttController.py should run on the RPIs you want to control.
@@ -40,13 +44,13 @@ The two applications are: mqttDirector, and mqttController.
 Requires python3
 
 mqttDirector sends requests to mqttController.  mqttcontroller then
-performs the requested action.  It primarily will run on node Hottub.
+performs the requested action.  It primarily will run on node DEV_NODE.
 
 The requests for action are transported from the mqttDirector to the
 mqttController via an MQTT Moquitto broker.
 
 mqttDirector utilizes the MQTT Mosquitto Server (or Broker - an older 
-terminology), which has to be installed on Hottub and run as a service.  
+terminology), which has to be installed on DEV_NODE and run as a service.  
 Please refer to MQTT Mosquitto for more information as to installing 
 and setting up the MQTT Mosquitto server.
 
@@ -89,7 +93,7 @@ command 'newLog', with a maximum of 5 iterations being retained.
 
 The bash utility mqttMonitorRPIChannels allows the monitoring of both channels, 
 CONTROLLER/ACTION and CONTROLLER/RESPONSE.  It can be redirected to a
-file when starting it.  It is located on Hottub in directory .../mqttDirector
+file when starting it.  It is located on DEV_NODE in directory .../mqttDirector
 
 
 SETUP:
@@ -172,11 +176,11 @@ utilized for mqttController.
 3.  Assuming you have made changes outlined in section 2 above, and have tested it and it
     works properly, you can move on to the next step.
 
-4.  Hottub is the main system for development, but the mqttController will be running on a
-    RPI.  Therefore, it is best to mount the development Hottub into a directory located
+4.  DEV_NODE is the main system for development, but the mqttController will be running on a
+    RPI.  Therefore, it is best to mount the development DEV_NODE into a directory located
     on the RPI, and then copy the required files to your /home/pi/MySoftwareProjects/mqttController.
 
-    So, we are going to use 'ssfs' to mount the Hottub's directory to the RPI's /media subdirectory.
+    So, we are going to use 'ssfs' to mount the DEV_NODE's directory to the RPI's /media subdirectory.
 
     4.1  As pi, perform the following:
 
@@ -184,33 +188,33 @@ utilized for mqttController.
 
             cd /media
 
-        4.1.2 create the directory Hottub.  This is where the Hottub code will mount.  
+        4.1.2 create the directory DEV_NODE.  This is where the DEV_NODE code will mount.  
 
-            sudo mkdir Hottub
+            sudo mkdir DEV_NODE
 
-        4.1.3 Directory Hottub is probably owned by root, so you'll need to change it, but
+        4.1.3 Directory DEV_NODE is probably owned by root, so you'll need to change it, but
             First, verify that it is owned by root by doing a 'ls -al' 
 
                 ls -al /media
 
             If it is owned by 'root root', then you'll want to change it to pi pi by issuing:
             
-                sudo chown pi:pi Hottub
+                sudo chown pi:pi DEV_NODE
 
             Now ensure it is correct by doing ls -al /media and observing the ownserhip of pi pi
 
                 ls -al /media 
             
 
-        4.1.4 Now we are going to create a flag-file to show wherether Hottub's directory
+        4.1.4 Now we are going to create a flag-file to show wherether DEV_NODE's directory
             has been mounted or not. Well do this by issueing the 'touch' command
-            for a file named 'NOT_MOUNTED'.  If in the future you do a ls -al /media/Hottub
-            and you see the file 'NOT_MOUNTED', then you know your Hottub file system has
+            for a file named 'NOT_MOUNTED'.  If in the future you do a ls -al /media/DEV_NODE
+            and you see the file 'NOT_MOUNTED', then you know your DEV_NODE file system has
             not been mounted, and you'll need to do the 'sshfs' command (down below).
 
-                First, cd to the Hottub directory you just created:
+                First, cd to the DEV_NODE directory you just created:
 
-                    cd /media/Hottub
+                    cd /media/DEV_NODE
 
                 Now, using 'touch' create the file NOT_MOUNTED
 
@@ -220,13 +224,13 @@ utilized for mqttController.
 
                     ls -al
 
-            You should see the file NOT_MOUNTED in /media/Hottub.
+            You should see the file NOT_MOUNTED in /media/DEV_NODE.
 
-        4.1.5  The directory on Hottub that contains the file mqttController.py, is located at
-            /home/superben/MySoftwareProjects/mqttController/.  So we are going to mount this 
-            directory at the mount point you just created: /media/Hottub
+        4.1.5  The directory on DEV_NODE that contains the file mqttController.py, is located at
+            /home/USER/MySoftwareProjects/mqttController/.  So we are going to mount this 
+            directory at the mount point you just created: /media/DEV_NODE
 
-            First, cd out of the /media/Hottub directory
+            First, cd out of the /media/DEV_NODE directory
     
                 cd ..
 
@@ -245,7 +249,7 @@ utilized for mqttController.
 
         4.1.7   Next, we'll sshfs the filesystem
 
-                sshfs -o nonempty superben@hottub.local:./MySoftwareProjects/mqttController   /media/Hottub
+                sshfs -o nonempty USER@DEV_NODE.local:./MySoftwareProjects/mqttController   /media/DEV_NODE
 
             Note: if your system complains that it does not have the command 'ssfs', then issue
             the following command to install, then repeat the 'sshfs' command above:
@@ -254,7 +258,7 @@ utilized for mqttController.
 
         4.1.8 Confirm that you have mounted the directory properly by performing 'ls -al'
 
-                ls -al /media/Hottub
+                ls -al /media/DEV_NODE
             
             You should see many files, not the single file NOT_MOUNTED.
 
@@ -264,15 +268,15 @@ utilized for mqttController.
                 cd ~/MySoftwareProjects/mqttController
 
         4.1.9 We will copy the pythono program mqttController.py 
-            from /media/Hottub/  into ~/MySoftwareProjects/mqttController which is your 
+            from /media/DEV_NODE/  into ~/MySoftwareProjects/mqttController which is your 
             current directory from above.
 
-            cp /media/Hottub/mqttController.py ./
+            cp /media/DEV_NODE/mqttController.py ./
 
         4.1.10 Now we will copy the sytemctl service mqttController.service 
-            from /media/Hottub to ~/MySoftareProjects/mqttController
+            from /media/DEV_NODE to ~/MySoftareProjects/mqttController
             
-            cp /media/Hottub/mqttController.service ./
+            cp /media/DEV_NODE/mqttController.service ./
 
         4.1.11 Do a 'ls -al' on ~/MySoftwareProjects/mqttController to ensure you see the two files:
 
@@ -282,11 +286,11 @@ utilized for mqttController.
 
         4.1.12 If all has gone well, you can unmount the sshfs file system.
             
-            sudo umount /media/Hottub
+            sudo umount /media/DEV_NODE
 
             Verify the unmount:
                 
-                ls -al /media/Hottub
+                ls -al /media/DEV_NODE
 
             It should only show the NOT_MOUNTED file.
 
@@ -512,9 +516,9 @@ utilized for mqttController.
         sudo systemctl status mqttController.service
 
 10.  To test system should now be properly set up to run mqttDirector on your MQTT 
-    Server system; mine is on Hottub.
+    Server system; mine is on DEV_NODE.
 
-    So, from a terminal session on my Hottub system, I cd 
+    So, from a terminal session on my DEV_NODE system, I cd 
     to ~/MySoftwareProjects/mqttDirector
 
         cd ~/MySoftwareProjects/mqttDirector
@@ -529,7 +533,7 @@ utilized for mqttController.
 
 11.  If you have sucessfully completed the application installation, you should see the file 
     ~/MySoftwareProjects/mqttController/mqttAction.txt, which is the log file for the application.  
-    You can create a new log file, while retaining up to 5 total files.  To do this, on Hottub, from the
+    You can create a new log file, while retaining up to 5 total files.  To do this, on DEV_NODE, from the
     application 'mqttDirector', issue the 'newLog' command.
             
 
