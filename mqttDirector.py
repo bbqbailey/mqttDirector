@@ -60,7 +60,7 @@ def _menu():
 
 # determine the appropriate control action contained in mqtt message
 def _action(strReceived):
-    DEBUG("\n_action() entry, strReceived: "+ strReceived)
+    DEBUG("\n_action() entry, strReceived: " + strReceived)
 
     actionDict = {
         "SHUTDOWN": shutdown,
