@@ -1,53 +1,537 @@
-# The MQTT Mosquitto System Controller
+--- OVERVIEW ---
 
-I have multiple computer systems in my office, mostly Linux of some description.
+I needed a way to quickly bring down multiple Raspberry PIs (RPI)
+on my home network.  Doing it manuaully, in the case where a 
+thunderstorm is quickly approaching, took too much time to login 
+to each, then issue the shutdown commands.
 
-Currently, there are two (2) large Ubuntu systems, plus 10 or more Raspberry
-Pi (RPI) systems.  Normally, all of these are up 24/7.
+So I implemented a MqttDirector python program that would allow me 
+to issue commands to the networked RPIs.  These commands would be 
+transported from my main computer, where mqttDirector was running,
+to each RPI using MQTT Mosquitto for the transport.
 
-I have a UPS that feeds the main computers and RPIs, so I'm fairly
-insulated from electrical issues, except for thunderstorms.  Lightning can
-be jumping 30,000 feet, so I've not found any device that can isolate all
-of the lightning if it hits close to my home.
+Each RPI was running an instance of mqttController, which was a 
+python program that listens for commands from MqttDirector by 
+listening for commands from MQTT Mosquitto.
 
-For that reason, when a thunder storm starts coming close to my home, I shutdown 
-and unplug my computer systems.  It's important, since these are all some flavor
-of Linux, that I shut them down using the system 'shutdown' command, instead
-of just unplugging the power.
+Note: I wrote this for myself, to install from my development node
+named Hottub. So the references to Hottub should be changed by you
+to reflect your development machine.  I would therefore, in order
+to keep the instructions in synch with your usage, create on your
+development machine, the directory structure ~/MySofwareProjects/mqttController
+Then you can pull from github.com/bbqbailey/mqttDirector and place into 
+your new ~/MySoftwareProjects/mqttController.  Then substitute
+your node's name for Hottub and you should be good to go.
 
-This is also the requirement for instances when I'm away and we lose electricty
-for some reason, and then the UPS battery gradually loses power, until it 
-drops the power to the systems.
+Note: The mqttDirector.py should run on your development node; the
+mqttController.py should run on the RPIs you want to control.
 
-The UPS I have will send a shutdown signal to the system that monitors it.  But
-I wanted it to also feed all of the other systems, including the RPIs.
+Note: This has only been tested on RPI Raspbian versions Jessie and Stretch
+While it may work on other versions, it is your responsibility to verify
+this.
 
-When a thunderstomr is coming, or the UPS battery is starting to reach its limit
-I'm currently having to manually log into each of these systems, then invoke a 
-'shutdown' command.  This can take a while with all of the systems ....
 
-So, I wanted something that would allow me to send a shutdown command to all of
-the systems.
+There are two (2) applications that together will control a RPI via
+messages received communicated via MQTT Mosquitto.
 
-This is that system!
+The two applications are: mqttDirector, and mqttController.
 
-It uses MQTT Mosquitto, with a broker/server running on my main system.  Then all 
-of the RPIs and other systems subscribe to the CONTROL topic, taking action
-as defined in the message or payload.
+--- MqttDirector.py INSIGHT ---
+Requires python3
 
-The Linux 'shutdown' command is protected, so that users are required to have
-'sudo' priviliges in order to invoke the command.  However, the normal function
-of the Linux system is to require 'authentication' for using 'sudo', which
-means any script that invokes 'shutdown' will also be prompted for a password
-for authentication.
+mqttDirector sends requests to mqttController.  mqttcontroller then
+performs the requested action.  It primarily will run on node Hottub.
 
-This is not how I want this to work.  Therefore, a change has to be made to the
-/etc/sudoers file, preferrabley in /etc/sudoers/sudoers.d/010_pi-nopasswd file.
+The requests for action are transported from the mqttDirector to the
+mqttController via an MQTT Moquitto broker.
 
-The added line required is:
-	pi RPI-Dev =NOPASSWD: /sbin/reboot
+mqttDirector utilizes the MQTT Mosquitto Server (or Broker - an older 
+terminology), which has to be installed on Hottub and run as a service.  
+Please refer to MQTT Mosquitto for more information as to installing 
+and setting up the MQTT Mosquitto server.
 
-When invoked via the Python3 os.system command, it is required to be "sudo shutdown now".
+mqttDirector is a terminal-based assplication, and has a simple text-based 
+menu enterface.
 
-I don't typically use any delay on the 'shutdown now', because typically I'm rather 
-desperate to get the systems down!
+Running mqttDirector will present a menu of choices.  E.g., 'echo', when 
+entered as the menu command, will cause all RPIs that are listening to the
+mqttDirector, to reply with their nodename.
+
+The MQTT Topics utilized are:
+
+    CONTROLLER/ACTION
+        Commands sent from mqttDirector are sent with Topic CONTROLLER/ACTION
+
+    CONTROLLER/RESPONSE
+        Responses from mqttController are sent with Topic CONTROLLER/RESPONSE
+
+    CONTROLLER/#
+        Enables you to monitor both 'channels'.
+        The utility mqttMonitorRPIChannels will do this for you.
+
+The mqttDirector menu command 'help' will list the available commands.
+
+
+
+--- mqttController.py INSIGHT ---
+Requires python3
+
+It typically will run on a Raspberry Pi device, as user 'pi'.  It can be run 
+as a standalone application but the primary use is that of a systemd service.
+When running as a systemd service, the output will not be visable from a 
+terminal, as there is no terminal associated with the service; instead, the 
+information can be viewed in the log file /home/pi/mqttController/mqttAction.txt.
+
+Multiple versions of this log file can be created by invoking the mqttDirector
+command 'newLog', with a maximum of 5 iterations being retained.
+
+--- mqttMonitorRPIChannels INSIGHT ---
+
+The bash utility mqttMonitorRPIChannels allows the monitoring of both channels, 
+CONTROLLER/ACTION and CONTROLLER/RESPONSE.  It can be redirected to a
+file when starting it.  It is located on Hottub in directory .../mqttDirector
+
+
+SETUP:
+In order to run the python application mqttDirector, several things must
+be set up first; it is also dependent on the application mqttController
+to run the commands on a RPI via MQTT Mosquitto.
+
+Please perform the following commands, in order, on the RPI that will be 
+utilized for mqttController.
+
+0.  It would be best if we started with your RPI being at the latest code level.  
+    So exicute the following:
+
+        sudo apt-get update
+
+    if no errors, then execute:
+
+        sudo apt-get upgrade
+
+1.  Install paho-mqtt.
+    This provides python the ability to communicate via MQTT.
+    Reference: https://pypi.org/project/paho-mqtt
+
+    Issue the following pip3 install command:
+    
+        sudo pip3 install paho-mqtt
+
+    If you get an error,  you may not have pip3 installed.  
+    To install pip3, issue the following command:
+
+        sudo apt install python3-pip
+
+    Then retry the 'sudo pip3 install paho-mqtt' command above.
+
+    
+
+2.  mqttController.py 
+    Invokes commands received from mqttDirector.
+    Commands, such as to shutdown or reboot the RPI, among others.  
+    Some of these commands require root privilidges (e.g., shutdown, reboog), 
+    making use of the 'sudo' command. 'sudo' requires authentication, 
+    in the form of a login password.  This is not convenient while running 
+    the application.  Therefore, the following changes will need to be made 
+    to the file: /etc/sudoers.d/010_pi-nopasswd
+
+    The following will setup subdoers to allow user 'pi' to issue these commands.
+
+    2.1.1 Change to /ect/sudoers.d
+
+        cd /etc/sudoers.d
+
+    2.1.2 Make a copy of suduoers.d/010_pi-nonpasswd.  It is protected, so use 'sudo'
+
+        sudo cp 010_pi-nopasswd 010_pi-nopasswd.original
+
+    2.1.3 Now, using sudo, edit the 010_pi-nopasswd file
+        e.g., 'sudo vim /010_pi_nopasswd'
+        Edit 010_pi-nopasswd, and add the following two entries
+
+        Assuming you are using 'vim' as your editor, issue the following:
+
+            sudo vim 010_pi-nopasswd
+
+        Now past the following two lines of text into your 010_pi_nopasswd file:
+
+            pi RPI-Dev =NOPASSWD: /bin/systemctl poweroff,/bin/systemctl halt,/bin/systemctl reboot
+            pi RPI-Dev =NOPASSWD: /sbin/reboot
+
+        Save your work.
+            Note: if vim says this is a read-only file, then save with the ':w!" option, then :q" to exit
+
+        Verify 010_pi_nopasswd has the correct information in it now.
+    
+            sudo cat 010_pi-nopasswd
+
+    2.2.    You may have to logout then login for it to work.  Or, if that doesn't work, 
+            you may have to reboot.  You can test via 'sudo reboot', providing you haven't 
+            already performed a sudo and authenticated while in this session.
+
+3.  Assuming you have made changes outlined in section 2 above, and have tested it and it
+    works properly, you can move on to the next step.
+
+4.  Hottub is the main system for development, but the mqttController will be running on a
+    RPI.  Therefore, it is best to mount the development Hottub into a directory located
+    on the RPI, and then copy the required files to your /home/pi/MySoftwareProjects/mqttController.
+
+    So, we are going to use 'ssfs' to mount the Hottub's directory to the RPI's /media subdirectory.
+
+    4.1  As pi, perform the following:
+
+        4.1.1 cd to the RPI directory /media
+
+            cd /media
+
+        4.1.2 create the directory Hottub.  This is where the Hottub code will mount.  
+
+            sudo mkdir Hottub
+
+        4.1.3 Directory Hottub is probably owned by root, so you'll need to change it, but
+            First, verify that it is owned by root by doing a 'ls -al' 
+
+                ls -al /media
+
+            If it is owned by 'root root', then you'll want to change it to pi pi by issuing:
+            
+                sudo chown pi:pi Hottub
+
+            Now ensure it is correct by doing ls -al /media and observing the ownserhip of pi pi
+
+                ls -al /media 
+            
+
+        4.1.4 Now we are going to create a flag-file to show wherether Hottub's directory
+            has been mounted or not. Well do this by issueing the 'touch' command
+            for a file named 'NOT_MOUNTED'.  If in the future you do a ls -al /media/Hottub
+            and you see the file 'NOT_MOUNTED', then you know your Hottub file system has
+            not been mounted, and you'll need to do the 'sshfs' command (down below).
+
+                First, cd to the Hottub directory you just created:
+
+                    cd /media/Hottub
+
+                Now, using 'touch' create the file NOT_MOUNTED
+
+                    touch NOT_MOUNTED
+
+            Now, make sure you've created this file by doing ls -al
+
+                    ls -al
+
+            You should see the file NOT_MOUNTED in /media/Hottub.
+
+        4.1.5  The directory on Hottub that contains the file mqttController.py, is located at
+            /home/superben/MySoftwareProjects/mqttController/.  So we are going to mount this 
+            directory at the mount point you just created: /media/Hottub
+
+            First, cd out of the /media/Hottub directory
+    
+                cd ..
+
+        4.1.6   Now verify the directory /home/pi/MySoftwareProjects/mqttController exists.
+
+                ls -al ~/MySoftwareProjects/mqttController
+                
+            If it doesn't exist, then create it.
+
+                mkdir ~/MySoftwareProjects
+                mkdir ~/MySoftwareProjects/mqttController
+
+            Now verify it was correctly created
+
+                ls -al ~/MySoftwareProjects/mqttController
+
+        4.1.7   Next, we'll sshfs the filesystem
+
+                sshfs -o nonempty superben@hottub.local:./MySoftwareProjects/mqttController   /media/Hottub
+
+            Note: if your system complains that it does not have the command 'ssfs', then issue
+            the following command to install, then repeat the 'sshfs' command above:
+
+                sudo apt install sshfs
+
+        4.1.8 Confirm that you have mounted the directory properly by performing 'ls -al'
+
+                ls -al /media/Hottub
+            
+            You should see many files, not the single file NOT_MOUNTED.
+
+
+            Now cd to the directory where your code will be placed
+
+                cd ~/MySoftwareProjects/mqttController
+
+        4.1.9 We will copy the pythono program mqttController.py 
+            from /media/Hottub/  into ~/MySoftwareProjects/mqttController which is your 
+            current directory from above.
+
+            cp /media/Hottub/mqttController.py ./
+
+        4.1.10 Now we will copy the sytemctl service mqttController.service 
+            from /media/Hottub to ~/MySoftareProjects/mqttController
+            
+            cp /media/Hottub/mqttController.service ./
+
+        4.1.11 Do a 'ls -al' on ~/MySoftwareProjects/mqttController to ensure you see the two files:
+
+            ls -al ~/MySoftwareProjects/mqttController
+
+            shows: mqttController.py and mqttController.service
+
+        4.1.12 If all has gone well, you can unmount the sshfs file system.
+            
+            sudo umount /media/Hottub
+
+            Verify the unmount:
+                
+                ls -al /media/Hottub
+
+            It should only show the NOT_MOUNTED file.
+
+5.  mqttDirector and mqttController both use MQTT Moquitto Server (Broker is older terminalogy).
+    We ill need to ensure this has been installed on your system, and is the correct version.
+
+    Issue the vollowing command:
+
+        which mosquitto_sub
+
+    responds with: /usr/bin/mosquitto_sub
+
+    If your system instead responds with nothing, then it's not installed.
+
+    The instructions that follow are specific to your Raspbien OS version; make
+    sure you are using the correct version, or you may experience problems!
+
+
+
+    5.1 ============ For JESSIE  ================
+
+        Note: these instructions are for a RPI Raspbian running version Jessie.  If you
+        are running Stretch, then please skip these instructions, and advance to section
+        "For Stretch"
+
+        You can determine your Raspbian version by performing the following:
+
+            cat /etc/os-release
+
+        For questions, see: http://jakemakes.eu/installing-mqtt-brokermosquitto-on-raspberry-pi/
+        Note: the text that follows is taken from jakemakes.eu above
+
+            Add the Mosquitto repository:
+
+            sudo wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+            sudo apt-key add mosquitto-repo.gpg.key
+            sudo rm mosquitto-repo.gpg.key
+        
+        Next, make the repository available to apt-get.  First we need to change to the apt
+        sources list directory:
+    
+            cd /etc/apt/sources.list.d/
+
+        Now install the packages list for your Raspbian
+
+            sudo wget http://repo.mosquitto.org/debian/mosquitto-jessie.list
+
+        Now update apt information and install Mosquitto
+
+            sudo apt-get update
+            sudo apt-get install mosquitto mosquitto 
+
+        Now we can install the three parts of Mosquitto proper.
+            - mosquitto - the MQTT broker/server
+            - mosquitto-cliends - command line clients, very useful in debugging
+            - python-mosquitto -the Python language bindings
+
+            sudo apt-get install mosquitto mosquitto-clients python-mosquitto
+
+        Now the broker is immediately started. Since we have to configure it first, 
+        stop it by command:
+
+            sudo /etc/init.d/mosquitto stop
+
+        We need to set up the configuration file.  The configuration files is located at
+        /etc/mosquitto.
+
+        Edit the config file:
+
+            sudo vim /etc/mosquitto/mosquitto.conf
+
+        The file should look like this:
+
+            # Place your local configuration in /etc/mosquitto/conf.d/
+            #
+            # A full description of the configuration file is at
+            # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+
+            pid_file /var/run/mosquitto.pid
+
+            persistence true
+            persistence_location /var/lib/mosquitto/
+
+            log_dest file /var/log/mosquitto/mosquitto.log
+
+            include_dir /etc/mosquitto/conf.d
+
+        Change it to look like this:
+
+            # Place your local configuration in /etc/mosquitto/conf.d/
+            #
+            # A full description of the configuration file is at
+            # /usr/share/doc/mosquitto/examples/mosquitto.conf.example
+
+            pid_file /var/run/mosquitto.pid
+
+            persistence true
+            persistence_location /var/lib/mosquitto/
+
+            log_dest topic
+
+            log_type error
+            log_type warning
+            log_type notice
+            log_type information
+
+            connection_messages true
+            log_timestamp true
+
+            include_dir /etc/mosquitto/conf.d
+        
+        Start the mosquitto server
+    
+            sudo /etc/init.d/mosquitto start
+
+        Test the installation by opening 2 terminal windows to first insert:
+
+            mosquitto_sub -d -t hello/world
+
+        And to the second window, insert:
+
+            mosquitto_pub -d -t hello/world -m "Hello from Terminal window 2!"
+
+        When you have done the second statement you should see something similar to
+        this in the Terminal 1 window:
+
+            sudo mosquitto_sub -d -t hello/world
+            Client mosqsub/3014-LightSwarm sending CONNECT
+            Client mosqsub/3014-LightSwarm received CONNACK
+            Client mosqsub/3014-LightSwarm sending SUBSCRIBE (Mid: 1, Topic: hello/world, QoS: 0)
+            Client mosqsub/3014-LightSwarm received SUBACK
+            Subscribed (mid: 1): 0
+            Client mosqsub/3014-LightSwarm received PUBLISH (d0, q0, r0, m0, 'hello/world', ... (32 bytes))
+            Greetings from Terminal window 2
+
+    5.2 ============= For STRETCH ==============
+
+        For questions, see:
+            https://www.switchdoc.com/2018/02/tutorial-installing-and-testing-mosquitto-mqtt-on-raspberry-pi/
+
+        To install mosquitto server, issue the following commands:
+
+            sudo wget https://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+            sudo apt-key add mosquitto-repo.gpg.key
+            cd /etc/apt/sources.list.d/
+
+            sudo wget http://repo.mosquitto.org/debian/mosquitto-stretch.list
+            sudo apt update
+            sudo apt upgrade
+
+
+        Now we can install the three parts of Mosquitto proper.  For questions, see
+            https://www.switchdoc.com/2018/02/tutorial-installing-and-testing-mosquitto-mqtt-on-raspberry-pi/
+
+           sudo apt install mosquitto mosquitto-clients
+           sudo apt install python-pip	
+           sudo pip install paho-mqtt
+    
+
+
+
+6.  You will now need to install the mqttController.service onto your RPI so that it 
+    will always provide the mqttController.py service without your having to manually
+    start it in a terminal.
+
+    First, make sure you are still in the ~/MySoftwareProjects/mqttController
+
+        cd ~/MySoftwareProjects/mqttController
+
+    Next, copy the mqttController.service to the systemd directory:
+    
+        sudo cp mqttController.service /lib/systemd/system/
+
+    Next, 'enable' it so it will start any time the system starts back up
+
+        sudo systemctl enable mqttController.service
+
+    Next, 'daemon-reload' to insert it into the systemd without restarting
+
+        sudo systemctl daemon-reload
+
+
+7.  Your system should already have python 3.5 installed. Let's check; Ctrl-Z 
+    will exit it.  Note: while Python 3.4.x may work, but I've experience
+    some issues running 3.4 on Raspbien 'Jessie'.  It's certainly OK to install 
+    under 3.4.x, but if you have any problems, I would 'suggest' moving to 
+    3.5.x.  I can't guarentee that moving to 3.5.x won't impact other programs 
+    you have installed; you should verify before installing.
+
+        python3
+
+    You should see some lines of text, with the last line showing ">>>".  If 
+    you see this, then you should be good.  
+
+    The version that I'm showing right now, and that the application was 
+    developed and tested on, is Python 3.5.3 (this should be the first line 
+    of the output from your 'python3' command.  If you don't see this, or 
+    if you get an error trying to invoke 'python3', then you will need to 
+    install python3.  Please perform a google search of Raspberry Pi python3' 
+    and follow installation instructions.
+
+    I tried updating one RPI system, which was running Python 3.4 on 'jessie' 
+    using the following, but it did not upgrade Python 3.4 to 3.5:
+
+        sudo apt update
+
+    Then
+
+        sudo apt upgrade
+    
+    Note: this may take a while, particularly the 'upgrade'
+    
+    Repeat the python3 command to see what version you are running if you did 
+    the update and upgrade.
+
+8.  Reboot your RPI to see if your service will auto-start:
+
+        sudo reboot
+
+9.  Once it has rebooted, then issue the following command to verify your service 
+    is up and running:
+
+        sudo systemctl status mqttController.service
+
+10.  To test system should now be properly set up to run mqttDirector on your MQTT 
+    Server system; mine is on Hottub.
+
+    So, from a terminal session on my Hottub system, I cd 
+    to ~/MySoftwareProjects/mqttDirector
+
+        cd ~/MySoftwareProjects/mqttDirector
+
+    Then issue the following command:
+
+        python3 -O mqttDirector.py   (Note: this option -O surpresses debug output.  For the first run, I would suggest -O)
+
+    or
+
+        python3 mqttDirector.py      (Note: the lack of the -O option means debug info will be displayed.)
+
+11.  If you have sucessfully completed the application installation, you should see the file 
+    ~/MySoftwareProjects/mqttController/mqttAction.txt, which is the log file for the application.  
+    You can create a new log file, while retaining up to 5 total files.  To do this, on Hottub, from the
+    application 'mqttDirector', issue the 'newLog' command.
+            
+
+Please let me know of any issues.
+Thanks!  Ben Bailey, Dec 2018
