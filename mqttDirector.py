@@ -14,7 +14,7 @@ def DEBUG(msg):
     if  __debug__: 
         print(msg)
 
-actionList = {}
+actionDict = {}
 
 
 # log actions
@@ -62,7 +62,7 @@ def _menu():
 def _action(strReceived):
     DEBUG("\n_action() entry, strReceived: "+ strReceived)
 
-    actionList = {
+    actionDict = {
         "SHUTDOWN": shutdown,
         "REBOOT": reboot,
         "ECHO": echo,
@@ -75,10 +75,10 @@ def _action(strReceived):
         "EXIT": exit
     }
 
-    if strReceived not in actionList:
+    if strReceived not in actionDict:
         _unknownAction(strReceived)
     else:
-        callFunction = actionList[strReceived]
+        callFunction = actionDict[strReceived]
 
     callFunction()
             
