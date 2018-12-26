@@ -14,6 +14,8 @@ def DEBUG(msg):
     if  __debug__: 
         print(msg)
 
+actionList = {}
+
 
 # log actions
 def logActions(action):
@@ -59,30 +61,28 @@ def _menu():
 # determine the appropriate control action contained in mqtt message
 def _action(strReceived):
     DEBUG("\n_action() entry, strReceived: "+ strReceived)
-    if (strReceived.find('SHUTDOWN') != -1):
-        shutdown()
-    elif (strReceived.find('REBOOT') != -1):
-        reboot()
-    elif (strReceived.find('ECHO') != -1):
-        echo()
-    elif (strReceived.find('BLINK') != -1):
-        _blink_on(strReceived)
-    elif (strReceived.find('NEWLOG') != -1):
-        newLog()
-    elif (strReceived.find('VERSION') != -1):
-        version()
-    elif (strReceived.find('OS') != -1):
-        osRelease()
-    elif (strReceived.find('NODENAME') != -1):  # !!!!!!!!!is this used?
-        _nodename(strReceived)
-    elif (strReceived.find('HELP') != -1):
-        help()
-    elif (strReceived.find('EXIT') != -1):
-        exit()
-    else:
-        _unknownAction(strReceived);
-    DEBUG("_action() exit\n")
 
+    actionList = {
+        "SHUTDOWN": shutdown,
+        "REBOOT": reboot,
+        "ECHO": echo,
+        "BLINK": _blink_on,
+        "NEWLOG": newLog,
+        "VERSION": version,
+        "OS": osRelease,
+        "NODENAME": _nodename,
+        "HELP": help,
+        "EXIT": exit
+    }
+
+    if strReceived not in actionList:
+        _unknownAction(strReceived)
+    else:
+        callFunction = actionList[strReceived]
+
+    callFunction()
+            
+    DEBUG("_action() exit\n")
 
 # sends command via MQTT to Topic:Command
 def _sendCommand(command):
