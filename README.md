@@ -1,5 +1,35 @@
 --- OVERVIEW ---
 
+Files:
+    mqttDirector.py 
+        A python program that sends commands to systems 
+        listening for these commands.
+
+    mqttController.py 
+        A python program that runs as a service, lisetning
+        for commands issued by mqttDirector on the network.
+        The commands arrive via a MQTT Mosquitto topic.
+
+    mqttController.service
+        A systemd file that runs on the same node where the 
+        mqttController.py will run.  This starts the service
+        mqttController.py on reboot or startin of the system.
+
+    mqttMonitorRPIChannels
+        A simple 'bash' file that monitors the MQTT  topics
+        that are published by MqttDirector.
+
+    mqttAction.txt  
+        This is a log file that is created in the same  
+        location where mqttcontroller.py exists.
+
+Future Intended Changes:
+
+        Provide a crontab entry to refresh the mqttAction.txt 
+        logs.  Currently they are manually refreshed via the 
+        menu option 'newLog' invoked by the MqttDirector.  It 
+        keeps a maximum of 5 versions.
+
 I needed a way to quickly bring down multiple Raspberry PIs (RPI)
 on my home network.  Doing it manuaully, in the case where a 
 thunderstorm is quickly approaching, took too much time to login 
