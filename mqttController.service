@@ -1,0 +1,13 @@
+[Unit]
+Description=mqttController Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/MySoftwareProjects/mqttController/mqttController.py
+Restart=always
+User=pi
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target
+
