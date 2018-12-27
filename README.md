@@ -53,9 +53,19 @@ Security
         only the commands recognized are acted on.  The primary 
         sensitivity is for the 'shutdown' and 'reboot' commands, 
         which could cause your RPI to comply.  Running in my 
-        environment, this was not an issue.  You'll need to deterimne
+        environment, this was not an issue.  You'll need to deterimn
         if a spoofed 'shutdown' or 'reboot' is problematic for your
         recpient nodes.  
+
+        A secondary security issue is the response of the system 
+        OS version, as this could provide individuals that have spoofed
+        the 'OS' command with the ability to find out the OS version.
+        This information generally is not provided as it allows 
+        hackers insight into the specific OS, thus allowing them to 
+        tune their hacks to that particular OS.  In my environment,
+        this was not an issue for me.  You'll need to determine 
+        if a spoofed 'OS' command with respondent OS version information
+        represents a security issue for your environment.
 
 Future Intended Changes:
         
