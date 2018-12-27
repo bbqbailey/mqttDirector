@@ -9,7 +9,9 @@ Files:
     mqttController.py 
         A python program that runs as a service, lisetning
         for commands issued by mqttDirector on the network.
-        The commands arrive via a MQTT Mosquitto topic.
+        The commands arrive via a MQTT Mosquitto topic.  
+        Performs recognized commands, ignores commands 
+        not recognized.
 
     mqttController.service
         A systemd file that runs on the same node where the 
