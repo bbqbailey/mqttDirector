@@ -23,12 +23,50 @@ Files:
         This is a log file that is created in the same  
         location where mqttcontroller.py exists.
 
-Future Intended Changes:
+Commands Currently Recognized
 
+        Reboot: causes all RPIs to reboot:
+        
+        Shutdown: causes all RPIs to shutdown 
+
+        Echo: All RPIs to reply with an echo with a timestamp
+
+        Blink <RPI>: Causes the onboard LED to blink.  Helpful
+            in locating a particular RPI in a stack of RPIs.
+
+        NewLog: Roll the logs of mqttAction.txt, keeping a 
+            copy of no more than five.
+
+        Version: Causes the RPIs to respond with the version of the 
+            software mqttController.py that is running.
+
+        osRelease: Causes RPIs to respond with the OS Version they 
+            are running.  Lists the contents of /etc/os-release.
+
+Future Intended Changes:
+        
+       
         Provide a crontab entry to refresh the mqttAction.txt 
         logs.  Currently they are manually refreshed via the 
         menu option 'newLog' invoked by the MqttDirector.  It 
         keeps a maximum of 5 versions.
+
+
+Notes:
+
+        It should be noted that while the primary recepients via 
+        mqttController of commands issued by MqttDirector are 
+        RPIs, any Linux system running mqttController, with appropriate
+        'sudo' privilidges should be able to respond.
+
+        The design of this program is to provide for future 
+        growth of commands that can be invoked on the various
+        network attached RPIs.
+
+        All commands received in mqttController, are logged in 
+        mqttAction.txt.  The entries include the node names, and the 
+        timestamp of the system generating the entry.
+        
 
 I needed a way to quickly bring down multiple Raspberry PIs (RPI)
 on my home network.  Doing it manuaully, in the case where a 
