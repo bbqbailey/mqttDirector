@@ -68,6 +68,8 @@ Notes:
         timestamp of the system generating the entry.
         
 
+--- Background ---
+
 I needed a way to quickly bring down multiple Raspberry PIs (RPI)
 on my home network.  Doing it manuaully, in the case where a 
 thunderstorm is quickly approaching, took too much time to login 
