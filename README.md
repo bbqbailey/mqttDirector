@@ -46,6 +46,17 @@ Commands Currently Recognized
         osRelease: Causes RPIs to respond with the OS Version they 
             are running.  Lists the contents of /etc/os-release.
 
+Security
+
+        No attempt has been made to protect the MQTT messages.  The
+        mqttController is susceptible to spoofed commands.  However,
+        only the commands recognized are acted on.  The primary 
+        sensitivity is for the 'shutdown' and 'reboot' commands, 
+        which could cause your RPI to comply.  Running in my 
+        environment, this was not an issue.  You'll need to deterimne
+        if a spoofed 'shutdown' or 'reboot' is problematic for your
+        recpient nodes.  
+
 Future Intended Changes:
         
        
@@ -54,6 +65,8 @@ Future Intended Changes:
         menu option 'newLog' invoked by the MqttDirector.  It 
         keeps a maximum of 5 versions.
 
+        Evaluate whether additional security measure need to be 
+        implemented in order to prevent spoofed commands.
 
 Notes:
 
