@@ -46,6 +46,7 @@ def _menu():
     print("\tnewLog          NewLog will create new logging file, and increment existing to version +1")
     print("\tversion         Version of mqttDirector.py (this application): ")
     print("\tosRelease       request the OS version info from each RPI")
+    print("\tdf              Report file system disk space usage.")
     print("\thelp            Help displays commands that can be invoked")
     print()
     print("\texit         Exit this programe only; subscribers still monitoring MQTT Topic CONTROLLER/ACTION")
@@ -70,6 +71,7 @@ def _action(strReceived):
         "NEWLOG": newLog,
         "VERSION": version,
         "OS": osRelease,
+        "DF": df,
         "NODENAME": _nodename,
         "HELP": help,
         "EXIT": exit
@@ -167,6 +169,15 @@ def osRelease():
     _response(msg)
     DEBUG("osRelease() exit")
 
+
+# df - disk info
+def df():
+    msg = " >>> Report file system disk space usage. >>> "
+    DEBUG("\ndf() entry")
+    logActions("Requesting df - file system disk space usage")
+    _sendCommand("DF")
+    _response(msg)
+    DEBUG("df() exit")
 
 # help - list the known commands and etc
 def help():

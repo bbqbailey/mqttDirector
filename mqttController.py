@@ -44,6 +44,8 @@ def _action(strReceived):
         version()
     elif (strReceived.find('OSRELEASE') != -1):
         osRelease()
+    elif (strReceived.find('DF') != -1):
+        df()
     else:
         _unknownAction(strReceived)
     DEBUG("_action() exit\n")
@@ -154,13 +156,27 @@ def osRelease():
 
 # echoo a message, specific to this instance,  back to the controller
 def version():
-    msg = " >>> VERSION " + MQTT_CONTROLLER_VERSION + "  <<<<"
+    msg = " >>> VERSION " + MQTT_CONTROLLER_VERSION + "  <<<< "
 
     print("msg: " + msg)
     DEBUG("\nversion() entry")
     logActions("Version: " + msg)
     _response(msg)
     DEBUG("version() exit")
+
+# df - file system disk space usage
+def df():
+    msg = " >>>> DF <<<< "
+
+    DEBUG("\ndf() entry")
+    print("msg: " + msg)
+    strReceived = subprocess.check_output(['df', '-lh']).decode('ascii')
+    print("return after df call")
+    print("df: " + strReceived)
+    logActions("df " + strReceived)
+    _response("df: " + strReceived)
+    DEBUG("\ndf() exit")
+
 
 
 # deal with unknown command actions received def unknownAction(msg):
