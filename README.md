@@ -46,6 +46,10 @@ Commands Currently Recognized
         osRelease: Causes RPIs to respond with the OS Version they 
             are running.  Lists the contents of /etc/os-release.
 
+        df: Causes RPIs to execut the 'df -lh' command, then respond 
+            with output from the command.
+        
+
 Security
 
         No attempt has been made to protect the MQTT messages.  The
