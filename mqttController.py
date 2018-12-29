@@ -5,7 +5,8 @@ import subprocess
 import time
 
 
-MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.0 Date Dec 22, 2018"
+#MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.0 Date Dec 22, 2018"
+MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.1 Date Dec 29, 2018"
 MQTT_SERVER = "192.168.1.208"  # mqtt server/broker
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH = "CONTROLLER/RESPONSE"
