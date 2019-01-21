@@ -30,6 +30,10 @@ Files:
         This is called via mqttController.py when the IP address is 
         requested to facilitate stripping out extreneous information.
 
+        NOTE: This script assumes the base address of the network 
+            is 192.168  You MUST CHANGE this if you have a different
+            base address.
+
 Commands Currently Recognized
 
         Reboot: causes all RPIs to reboot:
@@ -52,6 +56,10 @@ Commands Currently Recognized
 
         df: Causes RPIs to execut the 'df -lh' command, then respond 
             with output from the command.
+
+        nodename: Will cause RPIs to report their node name.
+
+        ip: will cause RPIs to report their IP address
         
 
 Security
