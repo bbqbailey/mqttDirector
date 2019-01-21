@@ -3,11 +3,12 @@ import paho.mqtt.client as mqtt
 import os
 import subprocess
 #MQTT_DIRECTOR_VERSION = "mqttDirector.py Version: 1.0 Date Dec 22, 2018"
-MQTT_DIRECTOR_VERSION = "mqttDirector.py Version: 1.1 Date Dec 29, 2018"
+#MQTT_DIRECTOR_VERSION = "mqttDirector.py Version: 1.1 Date Dec 29, 2018"
+MQTT_DIRECTOR_VERSION = "mqttDirector.py Version: 1.2 Date Jan 21, 2019" #moved callfunction() so it was part of if/else statement.
 MQTT_SERVER = "192.168.1.208"  # address where the  mqtt server/broker is running
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH = "CONTROLLER/RESPONSE"
-NODENAME = os.uname().nodename  
+THISNODE = os.uname().nodename  
 LOG_FILE = "mqttActions.txt"  #  a logging file
 
 
@@ -48,6 +49,8 @@ def _menu():
     print("\tversion         Version of mqttDirector.py (this application): ")
     print("\tosRelease       request the OS version info from each RPI")
     print("\tdf              Report file system disk space usage.")
+    print("\tnodeName        display the node name of each receipient.")
+    print("\tip              ip addresses of nodes.")
     print("\thelp            Help displays commands that can be invoked")
     print()
     print("\texit         Exit this programe only; subscribers still monitoring MQTT Topic CONTROLLER/ACTION")
@@ -62,7 +65,7 @@ def _menu():
 
 # determine the appropriate control action contained in mqtt message
 def _action(strReceived):
-    DEBUG("\n_action() entry, strReceived: " + strReceived)
+    DEBUG("\n_action() entry, strReceived: >>>" + strReceived + "<<<")
 
     actionDict = {
         "SHUTDOWN": shutdown,
@@ -73,7 +76,8 @@ def _action(strReceived):
         "VERSION": version,
         "OS": osRelease,
         "DF": df,
-        "NODENAME": _nodename,
+        "NODENAME": nodename,
+        "IP": ip,
         "HELP": help,
         "EXIT": exit
     }
@@ -82,8 +86,7 @@ def _action(strReceived):
         _unknownAction(strReceived)
     else:
         callFunction = actionDict[strReceived]
-
-    callFunction()
+        callFunction()
             
     DEBUG("_action() exit\n")
 
@@ -92,7 +95,7 @@ def _sendCommand(command):
     DEBUG("\n_sendCommand() entry")
     print("Sending command: " + command)
     date = subprocess.check_output('date').decode('ascii')
-    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_SUBSCRIBE + '\" -m \"App: mqttDirector; Nodename: ' + NODENAME + ' Message: ' + command + ' ' + date  + '\"' 
+    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_SUBSCRIBE + '\" -m \"App: mqttDirector; Node: ' + THISNODE + ' Message: ' + command + ' ' + date  + '\"' 
     os.system(response)
     _response(command)
     DEBUG("\n_sendCommand() exit")
@@ -180,6 +183,25 @@ def df():
     _response(msg)
     DEBUG("df() exit")
 
+# nodename
+def nodename():
+    msg = " >>> Report Node Name. >>> "
+    DEBUG("\nnodename() entry")
+    logActions("Requesting nodename - name of node")
+    _sendCommand("NODENAME")
+    _response(msg)
+    DEBUG("nodename() exit")
+
+#  ip - get the ip address of the nodes
+def ip():
+    msg = " >>> Report IP address. >>> "
+    DEBUG("\nip() entry")
+    logActions("Requesting ip - ip address of node")
+    _sendCommand("IP")
+    _response(msg)
+    DEBUG("ip() exit")
+
+
 # help - list the known commands and etc
 def help():
     msg = ">>>> help <<<<"
@@ -215,17 +237,17 @@ def _response(msg):
     DEBUG("\nresponse() entry")
     logActions("Responding with msg: " + msg)
     date = subprocess.check_output('date').decode('ascii')
-    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttDirectory.py, Nodename: ' + NODENAME + ' Message: ' + msg + ' ' + date + '\"'
+    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttDirector.py, Node: ' + THISNODE + ' Message: ' + msg + ' ' + date + '\"'
     os.system(response)
     DEBUG("\nresponse() exit")
 
 
 # ignore any received NODENAME message
-def _nodename(strReceived):
-    DEBUG("\nnodename() entry")
-    logActions("Ignoring  NODENAME Action as it is just an echo of an echo!")
-    print(">>>Ignoring NODENAME Action<<<")
-    DEBUG("nodename() exit\n")
+#def _nodename(strReceived):
+#    DEBUG("\nnodename() entry")
+#    logActions("Ignoring  NODENAME Action as it is just an echo of an echo!")
+#    print(">>>Ignoring NODENAME Action<<<")
+#    DEBUG("nodename() exit\n")
 
 
 # ================code to connect and receive mqtt messages===============

@@ -6,13 +6,14 @@ import time
 
 
 #MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.0 Date Dec 22, 2018"
-MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.1 Date Dec 29, 2018"
+#MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.1 Date Dec 29, 2018"
+MQTT_CONTROLLER_VERSION = "mqttController.py Version: 1.2 Date Jan 21, 2019" #added new functions NODENAME and IP
 MQTT_SERVER = "192.168.1.208"  # mqtt server/broker
 MQTT_TOPIC_SUBSCRIBE = "CONTROLLER/ACTION"
 MQTT_TOPIC_PUBLISH = "CONTROLLER/RESPONSE"
 USER_HOME = os.environ['HOME']
 print("user home: " + USER_HOME)
-NODENAME = os.uname().nodename
+THISNODE = os.uname().nodename
 LOG_FILE = USER_HOME + "/MySoftwareProjects/mqttController/mqttActions.txt"
 
 
@@ -47,6 +48,10 @@ def _action(strReceived):
         osRelease()
     elif (strReceived.find('DF') != -1):
         df()
+    elif (strReceived.find('NODENAME') != -1):
+        nodename()
+    elif (strReceived.find('IP') != -1):
+        ip()
     else:
         _unknownAction(strReceived)
     DEBUG("_action() exit\n")
@@ -94,7 +99,7 @@ def _blink_on(strReceived):
        - Before returning, will set the led mode to cpu0
        """
     strReceived = strReceived.upper()
-    nodename = NODENAME.upper()
+    nodename = THISNODE.upper()
     DEBUG("\n_blinking_on() entry, strReceived: " + strReceived)
 
     # determine if I'm the RPI that needs to blink
@@ -178,6 +183,34 @@ def df():
     _response("df: " + strReceived)
     DEBUG("\ndf() exit")
 
+# nodename - print name of node
+def nodename():
+    msg = " >>>> NODENAME <<<< "
+
+    DEBUG("\nnodename() entry")
+    print("msg: " + msg)
+    strReceived = subprocess.check_output(['uname', '-n']).decode('ascii')
+    print("return after nodename call")
+    print("Nodename: " + strReceived)
+    logActions("Nodename " + strReceived)
+    _response("Nodename: " + strReceived)
+    DEBUG("\nnodename() exit")
+
+# ip - print name of ip address
+def ip():
+    msg = " >>>> IP <<<< "
+
+    DEBUG("\nip() entry")
+    print("msg: " + msg)
+#    strReceived = subprocess.check_output(['ip', 'addr', 'show']).decode('ascii')
+    strReceived = subprocess.check_output(['/home/pi/MySoftwareProjects/mqttController/getIP.sh']).decode('ascii')
+    print("return after ip call")
+    print("ip: " + strReceived)
+    logActions("ip " + strReceived)
+    _response("ip: " + strReceived)
+    DEBUG("\nip() exit")
+
+
 
 
 # deal with unknown command actions received def unknownAction(msg):
@@ -195,17 +228,17 @@ def _response(msg):
     DEBUG("\n_response() entry")
     logActions("Responding with msg: " + msg) 
     date = subprocess.check_output('date').decode('ascii')
-    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttController; Nodename: ' + NODENAME + ' Message: ' + msg + ' ' + date + '\"'
+    response = 'mosquitto_pub -h ' + MQTT_SERVER + ' -t ' + '\"' + MQTT_TOPIC_PUBLISH + '\" -m \"App: mqttController; Nodename: ' + THISNODE + ' Message: ' + msg + ' ' + date + '\"'
     os.system(response)
     DEBUG("\n_response() exit")
 
 
 # ignore any received NODENAME message
-def _nodename(strReceived):
-    DEBUG("\nnodename() entry")
-    logActions("Ignoring  NODENAME Action as it is just an echo of an echo!")
-    print(">>>Ignoring NODENAME Action<<<")
-    DEBUG("nodename() exit\n")
+#def _nodename(strReceived):
+#    DEBUG("\nnodename() entry")
+#    logActions("Ignoring  NODENAME Action as it is just an echo of an echo!")
+#    print(">>>Ignoring NODENAME Action<<<")
+#    DEBUG("nodename() exit\n")
 
 
 #  ================code to connect and receive mqtt messages===============
