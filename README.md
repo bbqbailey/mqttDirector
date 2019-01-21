@@ -26,6 +26,10 @@ Files:
         This is a log file that is created in the same  
         location where mqttcontroller.py exists.
 
+    getIP.sh 
+        This is called via mqttController.py when the IP address is 
+        requested to facilitate stripping out extreneous information.
+
 Commands Currently Recognized
 
         Reboot: causes all RPIs to reboot:
